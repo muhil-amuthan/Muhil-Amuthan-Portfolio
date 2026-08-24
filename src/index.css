@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 33% 1%;
+    --foreground: 210 40% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 225 100% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 225 100% 56%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 225 100% 56%;
+    --radius: 0.625rem;
+  }
+
+  body {
+    @apply bg-[#030305] text-white antialiased;
+    font-family: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  ::selection {
+    background: rgba(34, 82, 255, 0.3);
+    color: white;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #030305;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(34, 82, 255, 0.4);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(34, 82, 255, 0.6);
+  }
+}
+
+@layer components {
+  .luminous-sweep-headline {
+    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(34,82,255,0.4) 25%, rgba(255,255,255,0.9) 50%, rgba(34,82,255,0.3) 75%, rgba(255,255,255,0.95) 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: luminousSweep 6s ease-in-out infinite alternate;
+  }
+
+  .glass-outer {
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 12px;
+  }
+
+  .glass-mid {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 8px;
+  }
+
+  .glass-inner {
+    background: rgba(0, 10, 40, 0.3);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 32px;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+  }
+
+  .gradient-border {
+    position: relative;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from var(--gradient-angle, 0deg), #2252FF, #3952FF, #D0FF71, #2252FF);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: gradientRotate 4s linear infinite;
+  }
+}
+
+@keyframes luminousSweep {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradientRotate {
+  0% {
+    --gradient-angle: 0deg;
+  }
+  100% {
+    --gradient-angle: 360deg;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.2;
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(120px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(120px) rotate(-360deg);
+  }
+}
+
+@keyframes orbitReverse {
+  from {
+    transform: rotate(360deg) translateX(80px) rotate(-360deg);
+  }
+  to {
+    transform: rotate(0deg) translateX(80px) rotate(0deg);
+  }
+}
+
+@property --gradient-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
