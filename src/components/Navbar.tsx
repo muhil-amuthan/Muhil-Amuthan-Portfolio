@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, FileText } from 'lucide-react';
 
 const navLinks = [
@@ -17,6 +17,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 80);
@@ -35,16 +36,23 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    setMobileOpen(false);
     if (href.startsWith('/#')) {
-      e.preventDefault();
       const id = href.replace('/#', '');
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        window.history.pushState(null, '', href);
+      if (location.pathname !== '/') {
+        navigate(href);
+      } else {
+        e.preventDefault();
+        const el = document.getElementById(id) || (id === 'profiles' ? document.getElementById('coding-profiles') : null);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+          window.history.pushState(null, '', href);
+        } else if (id === 'home') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          window.history.pushState(null, '', '/');
+        }
       }
     }
-    setMobileOpen(false);
   };
 
   return (
@@ -58,7 +66,15 @@ export default function Navbar() {
         style={{ backdropFilter: 'blur(20px)' }}
       >
         <div className="max-w-[1280px] mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="text-white font-bold text-xl tracking-wider font-['Geist']">
+          <Link
+            to="/"
+            onClick={() => {
+              if (location.pathname === '/') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="text-white font-bold text-xl tracking-wider font-['Geist']"
+          >
             MUHIL
           </Link>
 

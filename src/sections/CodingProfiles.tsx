@@ -53,6 +53,7 @@ export default function CodingProfiles() {
 
   return (
     <section id="coding-profiles" className="relative py-24 lg:py-32" ref={sectionRef}>
+      <div id="profiles" className="absolute -top-20" />
       <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
 
         {/* Section Header */}

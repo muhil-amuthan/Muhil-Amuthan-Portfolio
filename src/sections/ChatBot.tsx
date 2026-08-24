@@ -48,16 +48,22 @@ export default function ChatBot() {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
   const { ref: sectionRef, inView } = useInView(0.1);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [messages, isTyping]);
 
   const handleSend = async (text?: string) => {
     const userText = text || input.trim();
@@ -139,7 +145,11 @@ export default function ChatBot() {
               <div className="glass-mid">
                 <div className="glass-inner">
                   {/* Messages Area */}
-                  <div className="h-[320px] overflow-y-auto mb-4 space-y-4 pr-2" style={{ background: 'rgba(3, 3, 5, 0.6)', borderRadius: '12px', padding: '16px' }}>
+                  <div
+                    ref={messagesContainerRef}
+                    className="h-[320px] overflow-y-auto mb-4 space-y-4 pr-2"
+                    style={{ background: 'rgba(3, 3, 5, 0.6)', borderRadius: '12px', padding: '16px' }}
+                  >
                     {messages.map((msg) => (
                       <div
                         key={msg.id}
@@ -167,7 +177,6 @@ export default function ChatBot() {
                         </div>
                       </div>
                     )}
-                    <div ref={messagesEndRef} />
                   </div>
 
                   {/* Suggested Questions */}
