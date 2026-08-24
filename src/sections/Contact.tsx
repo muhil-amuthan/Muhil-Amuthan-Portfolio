@@ -74,7 +74,7 @@ const FORMSPREE_ENDPOINT =
   import.meta.env.VITE_FORMSPREE_ENDPOINT ||
   (import.meta.env.VITE_FORMSPREE_ID
     ? `https://formspree.io/f/${import.meta.env.VITE_FORMSPREE_ID}`
-    : 'https://formspree.io/f/xnqevwja');
+    : 'https://formspree.io/f/mkjwlovz');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
