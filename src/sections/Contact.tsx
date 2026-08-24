@@ -70,6 +70,14 @@ function ContactCard({ icon: Icon, label, value, href }: ContactCardProps) {
   return content;
 }
 
+const FORMSPREE_ENDPOINT =
+  import.meta.env.VITE_FORMSPREE_ENDPOINT ||
+  (import.meta.env.VITE_FORMSPREE_ID
+    ? `https://formspree.io/f/${import.meta.env.VITE_FORMSPREE_ID}`
+    : 'https://formspree.io/f/xnqevwja');
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function Contact() {
   const { ref: sectionRef, inView } = useInView(0.1);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
@@ -78,23 +86,69 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (sending) return;
+
+    // Client-side validation
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const subject = formData.subject.trim();
+    const message = formData.message.trim();
+
+    if (!name) {
+      setToast({ message: 'Please enter your name.', type: 'error' });
+      return;
+    }
+    if (!email || !EMAIL_REGEX.test(email)) {
+      setToast({ message: 'Please enter a valid email address.', type: 'error' });
+      return;
+    }
+    if (!subject) {
+      setToast({ message: 'Please enter a subject.', type: 'error' });
+      return;
+    }
+    if (!message) {
+      setToast({ message: 'Please enter your message.', type: 'error' });
+      return;
+    }
+
     setSending(true);
 
     try {
-      const response = await fetch('https://formspree.io/f/xnqevwja', {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          _replyto: email,
+          subject,
+          _subject: `New Portfolio Message from ${name}: ${subject}`,
+          message,
+        }),
       });
 
+      const data = await response.json().catch(() => null);
+
       if (response.ok) {
-        setToast({ message: 'Message sent successfully! I will get back to you soon.', type: 'success' });
+        setToast({
+          message: 'Message sent successfully! I will get back to you soon.',
+          type: 'success',
+        });
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
-        throw new Error('Failed to send');
+        const errorMessage =
+          data?.errors?.map((err: { message: string }) => err.message).join(', ') ||
+          'Failed to send message. Please try emailing directly to m.muhilamuthan@gmail.com.';
+        setToast({ message: errorMessage, type: 'error' });
       }
     } catch {
-      setToast({ message: 'Failed to send message. Please try emailing directly.', type: 'error' });
+      setToast({
+        message: 'Network error. Please try again or email directly to m.muhilamuthan@gmail.com.',
+        type: 'error',
+      });
     } finally {
       setSending(false);
     }
@@ -183,10 +237,13 @@ export default function Contact() {
                   </label>
                   <input
                     type="text"
+                    name="name"
+                    autoComplete="name"
                     required
+                    disabled={sending}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 text-sm text-white placeholder-[rgba(255,255,255,0.3)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors"
+                    className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 text-sm text-white placeholder-[rgba(255,255,255,0.3)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors disabled:opacity-60"
                     placeholder="Your name"
                   />
                 </div>
@@ -196,10 +253,13 @@ export default function Contact() {
                   </label>
                   <input
                     type="email"
+                    name="email"
+                    autoComplete="email"
                     required
+                    disabled={sending}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 text-sm text-white placeholder-[rgba(255,255,255,0.3)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors"
+                    className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 text-sm text-white placeholder-[rgba(255,255,255,0.3)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors disabled:opacity-60"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -211,10 +271,12 @@ export default function Contact() {
                 </label>
                 <input
                   type="text"
+                  name="subject"
                   required
+                  disabled={sending}
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 text-sm text-white placeholder-[rgba(255,255,255,0.3)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors"
+                  className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 text-sm text-white placeholder-[rgba(255,255,255,0.3)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors disabled:opacity-60"
                   placeholder="What's this about?"
                 />
               </div>
@@ -224,11 +286,13 @@ export default function Contact() {
                   Message
                 </label>
                 <textarea
+                  name="message"
                   required
                   rows={5}
+                  disabled={sending}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 text-sm text-white placeholder-[rgba(255,255,255,0.3)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors resize-none"
+                  className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 text-sm text-white placeholder-[rgba(255,255,255,0.3)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors resize-none disabled:opacity-60"
                   placeholder="Tell me about your project, opportunity, or just say hi..."
                 />
               </div>
