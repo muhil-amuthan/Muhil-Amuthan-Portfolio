@@ -127,6 +127,7 @@ export default function Contact() {
           subject,
           _subject: `New Portfolio Message from ${name}: ${subject}`,
           message,
+          submittedAt: new Date().toLocaleString(),
         }),
       });
 
