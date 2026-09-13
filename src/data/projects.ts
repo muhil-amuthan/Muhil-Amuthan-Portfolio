@@ -68,7 +68,7 @@ export const projects: Project[] = [
     badge: "Java",
     description: "Full OOP banking simulation in Java covering core transaction logic, inheritance, polymorphism, and exception handling. Demonstrates clean software architecture principles.",
     tech: ["Java", "OOP", "Core Java"],
-    github: "https://github.com/muhil-amuthan",
+    github: "https://github.com/muhil-amuthan/ATM-Simulation",
     category: "Java",
     image: "/fedmed-network.png"
   }
