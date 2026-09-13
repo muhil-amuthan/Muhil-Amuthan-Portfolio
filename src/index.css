@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Responsive Utilities ─────────────────────────────── */
+@layer utilities {
+  /* Hide scrollbar for filter tabs horizontal scroll */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Prevent horizontal page overflow on all screens */
+  .overflow-x-clip { overflow-x: clip; }
+}
+
 @layer base {
   :root {
     --background: 240 33% 1%;

@@ -66,15 +66,15 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 max-w-[1280px] mx-auto px-6 lg:px-8 w-full py-24 pt-32">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
+      <div className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 w-full py-20 pt-28 sm:py-24 sm:pt-32">
+        <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-8">
           {/* Left content */}
-          <div className="flex-1 max-w-[640px]">
+          <div className="flex-1 w-full max-w-[640px] mx-auto lg:mx-0 text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex items-center gap-3 mb-8"
+              className="flex items-center gap-3 mb-6 justify-center lg:justify-start"
             >
               <span className="w-[2px] h-5 bg-[#FFCD00]" />
               <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
@@ -86,7 +86,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="text-4xl sm:text-5xl lg:text-[60px] font-extrabold leading-[1.1] font-['Geist'] luminous-sweep-headline mb-6"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-[60px] font-extrabold leading-[1.1] font-['Geist'] luminous-sweep-headline mb-5"
             >
               A Tech-Driven, Collaborative, and Innovation-Focused Engineering Student
             </motion.h1>
@@ -97,7 +97,7 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="mb-4"
             >
-              <span className="text-[#2252FF] font-['Geist_Mono'] text-lg">
+              <span className="text-[#2252FF] font-['Geist_Mono'] text-base sm:text-lg">
                 {typedText}
                 <span className="animate-pulse">|</span>
               </span>
@@ -107,7 +107,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="text-[rgba(255,255,255,0.7)] text-lg font-['Geist'] leading-relaxed mb-8 max-w-[560px]"
+              className="text-[rgba(255,255,255,0.7)] text-base sm:text-lg font-['Geist'] leading-relaxed mb-8 max-w-[560px] mx-auto lg:mx-0"
             >
               Hi, I'm <span className="text-white font-semibold">Muhil Amuthan M</span>. An aspiring AI/ML and software engineer passionate about building impactful, scalable solutions that address real-world challenges and create meaningful change.
             </motion.p>
@@ -116,18 +116,18 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}
-              className="flex flex-wrap gap-3 mb-6"
+              className="flex flex-wrap gap-3 mb-6 justify-center lg:justify-start"
             >
               <button
                 onClick={() => handleScroll('projects')}
-                className="group bg-[#2252FF] text-white px-7 py-3.5 rounded-lg font-['Geist'] text-[15px] font-medium flex items-center gap-2 hover:bg-[#3952FF] transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,82,255,0.4)]"
+                className="group bg-[#2252FF] text-white px-6 sm:px-7 py-3 sm:py-3.5 rounded-lg font-['Geist'] text-[14px] sm:text-[15px] font-medium flex items-center gap-2 hover:bg-[#3952FF] transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,82,255,0.4)]"
               >
                 Explore My Work
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
               <button
                 onClick={() => handleScroll('contact')}
-                className="glass-card text-white px-5 py-3.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(34,82,255,0.4)] hover:shadow-[0_0_20px_rgba(34,82,255,0.15)] transition-all duration-300"
+                className="glass-card text-white px-5 py-3 sm:py-3.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(34,82,255,0.4)] hover:shadow-[0_0_20px_rgba(34,82,255,0.15)] transition-all duration-300"
               >
                 Let's Talk
               </button>
@@ -137,13 +137,13 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
-              className="flex flex-wrap gap-3"
+              className="flex flex-wrap gap-2 sm:gap-3 justify-center lg:justify-start"
             >
               <a
                 href="/resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-card text-white px-5 py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(255,205,0,0.4)] hover:shadow-[0_0_20px_rgba(255,205,0,0.1)] transition-all duration-300"
+                className="glass-card text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(255,205,0,0.4)] hover:shadow-[0_0_20px_rgba(255,205,0,0.1)] transition-all duration-300"
                 aria-label="View Resume PDF"
               >
                 <FileText size={15} className="text-[#FFCD00]" />
@@ -152,7 +152,7 @@ export default function Hero() {
               <a
                 href="/resume.pdf"
                 download="Muhil_Amuthan_Resume.pdf"
-                className="glass-card text-white px-5 py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(208,255,113,0.4)] hover:shadow-[0_0_20px_rgba(208,255,113,0.1)] transition-all duration-300"
+                className="glass-card text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(208,255,113,0.4)] hover:shadow-[0_0_20px_rgba(208,255,113,0.1)] transition-all duration-300"
                 aria-label="Download Resume PDF"
               >
                 <Download size={15} className="text-[#D0FF71]" />
@@ -162,7 +162,7 @@ export default function Hero() {
                 href="https://github.com/muhil-amuthan"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-card text-white px-4 py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(34,82,255,0.4)] hover:shadow-[0_0_20px_rgba(34,82,255,0.15)] transition-all duration-300"
+                className="glass-card text-white px-4 py-2 sm:py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(34,82,255,0.4)] hover:shadow-[0_0_20px_rgba(34,82,255,0.15)] transition-all duration-300"
                 aria-label="GitHub Profile"
               >
                 <Github size={15} />
@@ -172,7 +172,7 @@ export default function Hero() {
                 href="https://linkedin.com/in/muhil-amuthan-m"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-card text-white px-4 py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(34,82,255,0.4)] hover:shadow-[0_0_20px_rgba(34,82,255,0.15)] transition-all duration-300"
+                className="glass-card text-white px-4 py-2 sm:py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(34,82,255,0.4)] hover:shadow-[0_0_20px_rgba(34,82,255,0.15)] transition-all duration-300"
                 aria-label="LinkedIn Profile"
               >
                 <Linkedin size={15} />
@@ -182,7 +182,7 @@ export default function Hero() {
                 href="https://leetcode.com/u/Muhil-Amuthan_M"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-card text-white px-4 py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(255,161,22,0.4)] hover:shadow-[0_0_20px_rgba(255,161,22,0.1)] transition-all duration-300"
+                className="glass-card text-white px-4 py-2 sm:py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(255,161,22,0.4)] hover:shadow-[0_0_20px_rgba(255,161,22,0.1)] transition-all duration-300"
                 aria-label="LeetCode Profile"
               >
                 <Code2 size={15} className="text-[#FFA116]" />
@@ -198,7 +198,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="relative shrink-0"
           >
-            <div className="relative w-[280px] h-[360px] lg:w-[340px] lg:h-[440px]">
+            <div className="relative w-[200px] h-[260px] sm:w-[260px] sm:h-[340px] lg:w-[340px] lg:h-[440px]">
               {/* Glow */}
               <div
                 className="absolute inset-0 rounded-2xl"
@@ -250,7 +250,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.9 }}
-          className="mt-16 lg:mt-24 grid grid-cols-2 md:grid-cols-4 gap-6"
+          className="mt-12 sm:mt-16 lg:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6"
         >
           {[
             { number: '7+', label: 'Innovative Projects' },
@@ -259,8 +259,8 @@ export default function Hero() {
             { number: '100+', label: 'LeetCode Problems' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="text-3xl lg:text-4xl font-extrabold text-white font-['Geist']">{stat.number}</div>
-              <div className="text-xs text-[rgba(255,255,255,0.4)] font-['Geist_Mono'] uppercase tracking-[1.5px] mt-1">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white font-['Geist']">{stat.number}</div>
+              <div className="text-[10px] sm:text-xs text-[rgba(255,255,255,0.4)] font-['Geist_Mono'] uppercase tracking-[1.5px] mt-1">
                 {stat.label}
               </div>
             </div>

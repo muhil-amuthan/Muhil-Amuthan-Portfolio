@@ -44,8 +44,8 @@ export default function About() {
   const { ref: sectionRef, inView } = useInView(0.1);
 
   return (
-    <section id="about" className="relative py-24 lg:py-32" ref={sectionRef}>
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
+    <section id="about" className="relative py-16 sm:py-24 lg:py-32" ref={sectionRef}>
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -71,7 +71,7 @@ export default function About() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <div className="glass-card p-8">
+            <div className="glass-card p-5 sm:p-8">
               <div className="flex items-center gap-4 mb-6">
                 <img
                   src="/profile-photo.jpg"
@@ -179,7 +179,7 @@ export default function About() {
           initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8"
+          className="mt-10 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8"
         >
           {[
             { icon: Code2, value: 7, suffix: '+', label: 'Projects Built' },
@@ -187,9 +187,9 @@ export default function About() {
             { icon: BookOpen, value: 7, suffix: '', label: 'Certifications' },
             { icon: Trophy, value: 25, suffix: '', label: 'Quest Global Rank', prefix: 'Top ' },
           ].map((stat) => (
-            <div key={stat.label} className="glass-card p-6 text-center group hover:border-[rgba(34,82,255,0.3)] transition-all duration-300">
+            <div key={stat.label} className="glass-card p-4 sm:p-6 text-center group hover:border-[rgba(34,82,255,0.3)] transition-all duration-300">
               <stat.icon size={24} className="mx-auto mb-3 text-[#2252FF] group-hover:scale-110 transition-transform" />
-              <div className="text-3xl font-extrabold text-white font-['Geist'] mb-1">
+              <div className="text-2xl sm:text-3xl font-extrabold text-white font-['Geist'] mb-1">
                 {stat.prefix || ''}<AnimatedCounter end={stat.value} suffix={stat.suffix} />
               </div>
               <div className="text-xs text-[rgba(255,255,255,0.4)] font-['Geist_Mono'] uppercase tracking-[1px]">

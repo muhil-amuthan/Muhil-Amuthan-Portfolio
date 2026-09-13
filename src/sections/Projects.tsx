@@ -27,8 +27,8 @@ export default function Projects() {
     : projects.filter(p => p.category.includes(activeFilter));
 
   return (
-    <section id="projects" className="relative py-24 lg:py-32" ref={sectionRef}>
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
+    <section id="projects" className="relative py-16 sm:py-24 lg:py-32" ref={sectionRef}>
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -55,7 +55,7 @@ export default function Projects() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="flex flex-wrap gap-3 mb-12"
+          className="flex gap-2 sm:gap-3 mb-10 sm:mb-12 overflow-x-auto pb-2 no-scrollbar"
         >
           {categories.map((cat) => (
             <button
@@ -110,7 +110,7 @@ export default function Projects() {
 
                 {/* Content */}
                 <div className="flex-1 w-full">
-                  <h3 className="text-2xl lg:text-3xl font-bold text-white font-['Geist'] mb-4">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-['Geist'] mb-3 sm:mb-4">
                     {project.title}
                   </h3>
                   <p className="text-[rgba(255,255,255,0.65)] text-base leading-[1.7] font-['Geist'] mb-6">

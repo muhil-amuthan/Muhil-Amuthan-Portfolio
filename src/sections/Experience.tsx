@@ -23,8 +23,8 @@ export default function Experience() {
   const [activeModal, setActiveModal] = useState<string | null>(null);
 
   return (
-    <section id="experience" className="relative py-24 lg:py-32" ref={sectionRef}>
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
+    <section id="experience" className="relative py-16 sm:py-24 lg:py-32" ref={sectionRef}>
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
         <motion.div

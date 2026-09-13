@@ -52,9 +52,9 @@ export default function CodingProfiles() {
   const { ref: sectionRef, inView } = useInView(0.1);
 
   return (
-    <section id="coding-profiles" className="relative py-24 lg:py-32" ref={sectionRef}>
+    <section id="coding-profiles" className="relative py-16 sm:py-24 lg:py-32" ref={sectionRef}>
       <div id="profiles" className="absolute -top-20" />
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
         <motion.div
@@ -88,7 +88,7 @@ export default function CodingProfiles() {
               initial={{ opacity: 0, y: 40 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 + index * 0.15 }}
-              className="group glass-card p-8 block transition-all duration-300"
+              className="group glass-card p-5 sm:p-8 block transition-all duration-300"
               style={{
                 borderColor: 'rgba(255,255,255,0.08)',
               }}

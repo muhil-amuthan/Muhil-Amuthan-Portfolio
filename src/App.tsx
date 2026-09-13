@@ -65,7 +65,7 @@ export default function App() {
   const isAdmin = location.pathname.startsWith('/admin');
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#030305]">
+    <div className="relative min-h-[100dvh] bg-[#030305] overflow-x-hidden">
       <ScrollToTop />
       <LoadingScreen />
       {!isAdmin && <CustomCursor />}

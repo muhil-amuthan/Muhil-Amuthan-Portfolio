@@ -53,8 +53,8 @@ export default function Skills() {
   const { ref: sectionRef, inView } = useInView(0.1);
 
   return (
-    <section id="skills" className="relative py-24 lg:py-32 overflow-hidden" ref={sectionRef}>
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
+    <section id="skills" className="relative py-16 sm:py-24 lg:py-32 overflow-hidden" ref={sectionRef}>
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -81,7 +81,7 @@ export default function Skills() {
           initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative h-[400px] mb-16 overflow-hidden rounded-2xl"
+          className="relative h-[220px] sm:h-[300px] md:h-[400px] mb-12 sm:mb-16 overflow-hidden rounded-2xl"
           style={{
             background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(2, 19, 33, 0.6), transparent)',
           }}

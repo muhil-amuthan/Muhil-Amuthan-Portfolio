@@ -156,8 +156,8 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="relative py-24 lg:py-32" ref={sectionRef}>
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
+    <section id="contact" className="relative py-16 sm:py-24 lg:py-32" ref={sectionRef}>
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -201,7 +201,7 @@ export default function Contact() {
               <p className="text-[rgba(255,255,255,0.4)] text-xs font-['Geist_Mono'] uppercase tracking-wider mb-4">
                 Also find me on
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-3">
                 {[
                   { name: 'GitHub', href: PORTFOLIO_LINKS.github },
                   { name: 'LeetCode', href: PORTFOLIO_LINKS.leetcode },
@@ -230,7 +230,7 @@ export default function Contact() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <form onSubmit={handleSubmit} className="glass-card p-8">
+            <form onSubmit={handleSubmit} className="glass-card p-5 sm:p-8">
               <div className="grid sm:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-wider mb-2 block">

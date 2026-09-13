@@ -92,8 +92,8 @@ export default function Certifications() {
   }, [inView]);
 
   return (
-    <section id="certifications" className="relative py-24 lg:py-32" ref={sectionRef}>
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
+    <section id="certifications" className="relative py-16 sm:py-24 lg:py-32" ref={sectionRef}>
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
         <motion.div
