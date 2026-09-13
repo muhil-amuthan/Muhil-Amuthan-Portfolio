@@ -37,7 +37,7 @@ const profiles = [
     name: 'GitHub',
     handle: 'muhil-amuthan',
     url: 'https://github.com/muhil-amuthan',
-    stat: '11+',
+    stat: '14+',
     statLabel: 'Repositories',
     description: 'Open source projects spanning AI/ML, Full Stack, IoT, and Java — all publicly available.',
     accentColor: '#D0FF71',

@@ -8,8 +8,8 @@ export const PORTFOLIO_LINKS = {
 } as const;
 
 export const PORTFOLIO_STATS = {
-  leetcodeProblems: '90+',
-  githubRepos: '11+',
+  leetcodeProblems: '100+',
+  githubRepos: '14+',
   projectCount: '8+',
   questGlobalRank: 'Top 25',
 } as const;

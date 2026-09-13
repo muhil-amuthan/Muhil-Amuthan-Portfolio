@@ -183,7 +183,7 @@ export default function About() {
         >
           {[
             { icon: Code2, value: 7, suffix: '+', label: 'Projects Built' },
-            { icon: Award, value: 80, suffix: '+', label: 'LeetCode Problems' },
+            { icon: Award, value: 100, suffix: '+', label: 'LeetCode Problems' },
             { icon: BookOpen, value: 7, suffix: '', label: 'Certifications' },
             { icon: Trophy, value: 25, suffix: '', label: 'Quest Global Rank', prefix: 'Top ' },
           ].map((stat) => (

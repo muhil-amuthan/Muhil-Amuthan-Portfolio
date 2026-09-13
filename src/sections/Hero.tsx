@@ -4,7 +4,7 @@ import { ArrowRight, Github, Linkedin, FileText, Download, Code2 } from 'lucide-
 
 export default function Hero() {
   const [typedText, setTypedText] = useState('');
-  const roles = ['AI/ML Engineer', 'Full-Stack Developer', 'Federated Learning Researcher', 'IoT Innovator'];
+  const roles = ['AI/ML Engineer', 'Full-Stack Developer', 'Embedded Engineer', 'Federated Learning Researcher', 'IoT Innovator'];
   const [roleIndex, setRoleIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -256,7 +256,7 @@ export default function Hero() {
             { number: '7+', label: 'Innovative Projects' },
             { number: '7', label: 'Certifications Earned' },
             { number: 'Top 25', label: 'Quest Global Ingenium' },
-            { number: '80+', label: 'LeetCode Problems' },
+            { number: '100+', label: 'LeetCode Problems' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-3xl lg:text-4xl font-extrabold text-white font-['Geist']">{stat.number}</div>

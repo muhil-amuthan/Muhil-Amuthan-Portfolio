@@ -88,9 +88,9 @@ export const timelineEvents: TimelineEvent[] = [
   {
     year: '2026',
     icon: 'Code2',
-    title: '90+ LeetCode Problems Solved',
+    title: '100+ LeetCode Problems Solved',
     description:
-      'Consistent DSA practice with 90+ problems solved on LeetCode.',
+      'Consistent DSA practice with 100+ problems solved on LeetCode.',
   },
   {
     year: '2026',
@@ -110,8 +110,8 @@ export const timelineEvents: TimelineEvent[] = [
   {
     year: '2026',
     icon: 'GitBranch',
-    title: '11+ Public GitHub Repositories',
+    title: '14+ Public GitHub Repositories',
     description:
-      'Built a strong open-source presence with 11+ public repositories across AI/ML and full-stack projects.',
+      'Built a strong open-source presence with 14+ public repositories across AI/ML and full-stack projects.',
   },
 ];

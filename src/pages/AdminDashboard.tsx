@@ -73,7 +73,7 @@ export default function AdminDashboard() {
       achievements: defaultTimeline.map((t, i) => ({ id: i + 1, year: t.year, title: t.title, description: t.description, highlight: t.highlight || false })),
       bio: 'I am a passionate engineering student obsessed with building AI systems that solve real-world problems. From federated learning models to full-stack web applications, I love shipping products that create measurable impact.',
       headline: 'A Tech-Driven, Collaborative, and Innovation-Focused Engineering Student',
-      stats: { projects: 7, leetcode: 55, certifications: 8 },
+      stats: { projects: 7, leetcode: 100, certifications: 8 },
     };
   });
 

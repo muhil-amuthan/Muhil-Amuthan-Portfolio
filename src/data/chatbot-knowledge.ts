@@ -63,7 +63,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     keywords: ['achievements', 'awards', 'milestone', 'journey', 'crypt-era'],
     response:
-      "Muhil's key achievements:\n\n- Top 25/3700+ Teams at Quest Global Ingenium 2026\n- 7 Industry Certifications (GUVI, HCL, Cisco, NASSCOM Gold, NPTEL, Infosys, AWS)\n- Research paper presented at CRYPTERA 2026 (CIT) to 100+ engineers\n- 80+ LeetCode Problems Solved\n- 11+ Public GitHub Repositories\n- IEEE Student Branch Technical Presenter & Coordinator",
+      "Muhil's key achievements:\n\n- Top 25/3700+ Teams at Quest Global Ingenium 2026\n- 7 Industry Certifications (GUVI, HCL, Cisco, NASSCOM Gold, NPTEL, Infosys, AWS)\n- Research paper presented at CRYPTERA 2026 (CIT) to 100+ engineers\n- 100+ LeetCode Problems Solved\n- 14+ Public GitHub Repositories\n- IEEE Student Branch Technical Presenter & Coordinator",
   },
   {
     keywords: ['contact', 'email', 'reach', 'phone', 'linkedin', 'github'],
@@ -73,7 +73,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     keywords: ['about', 'who', 'tell me about', 'background', 'bio'],
     response:
-      'Muhil Amuthan M is a 2nd-year ECE Engineering student with a Minor in Computer Science at V.S.B. Engineering College, Karur. He is a Full Stack Developer and AI/ML-focused engineer passionate about building impactful, scalable solutions across web apps, machine learning, and IoT.',
+      'Muhil Amuthan M is a 2nd-year ECE Engineering student with a Minor in Computer Science at V.S.B. Engineering College, Karur. He is an Embedded Engineer, Full Stack Developer, and AI/ML-focused engineer passionate about building impactful, scalable solutions across web apps, machine learning, and IoT.',
   },
 ];
 
