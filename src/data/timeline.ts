@@ -9,109 +9,174 @@ export interface TimelineEvent {
 export const timelineEvents: TimelineEvent[] = [
   {
     year: '2022',
-    icon:'10th std',
-    title:'Completed 10th Standared',
-    description:'Completed 10th standared in Buds Matric Hr Sec School with the 74.6%'
+    icon: '10th std',
+    title: 'Completed 10th Standard',
+    description:
+      'Completed 10th Standard at Buds Matric Higher Secondary School with 74.6%.',
   },
+
+  {
+    year: '2024',
+    icon: 'GraduationCap',
+    title: 'Completed 12th Standard',
+    description:
+      'Completed 12th Standard with 80.5%, preparing for the next stage of my engineering journey.',
+  },
+
   {
     year: '2024',
     icon: 'GraduationCap',
     title: 'Joined V.S.B. Engineering College',
     description:
-      'Started B.E. ECE with a Minor in Computer Science. Began the journey to build AI systems that create real-world impact.',
+      'Started B.E. in Electronics and Communication Engineering with a Minor in Computer Science, combining electronics, programming, and software development.',
+    highlight: true,
   },
+
   {
     year: '2024',
     icon: 'Users',
     title: 'Joined IEEE Student Branch',
     description:
-      'Became Student Coordinator, bridging technology and community through workshops and events.',
+      'Joined the IEEE Student Branch and became involved in technical activities, workshops, events, and student coordination.',
   },
+
   {
     year: '2025',
     icon: 'Wifi',
     title: 'In-Plant Training — BSNL India',
     description:
-      'Hands-on exposure to telecom network infrastructure, switching systems, and real-time OSI-layer communication technologies in Madurai SSA.',
+      'Gained practical exposure to telecommunications, network infrastructure, switching systems, and communication technologies during in-plant training at BSNL Madurai SSA.',
   },
+
   {
     year: '2025',
-    icon: 'Leaf',
-    title: 'Launched PlantGuard AI',
+    icon: 'Code2',
+    title: 'Started Building Full-Stack Projects',
     description:
-      'First full-stack CNN web app for plant disease detection — bilingual, production-ready with Tamil/English support.',
+      'Developed hands-on experience with frontend and backend technologies including React, JavaScript, Python, Flask, FastAPI, databases, and REST APIs.',
   },
+
   {
     year: '2025',
-    icon: 'Ambulance',
-    title: 'Built AuraFlow — Emergency Routing',
-    description:
-      'A* algorithm + IoT system that reduced simulated emergency response times by 20% with geofencing capabilities.',
-  },
-  {
-    year: '2026',
-    icon: 'Trophy',
-    title: 'TOP 25 / 3700+ Teams — Quest Global Ingenium',
-    description:
-      'CarbonWise placed in the top 1% at a pan-India competition — a real-time ML carbon intelligence platform.',
-    highlight: true,
-  },
-  {
-    year: '2026',
     icon: 'Brain',
-    title: 'Architected FedMed-AI',
+    title: 'Started AI / ML Journey',
     description:
-      '1000-node federated learning framework for medical-grade privacy in lung cancer detection.',
+      'Started exploring Machine Learning, Deep Learning, data analysis, NLP, and Generative AI through projects, courses, and practical experimentation.',
   },
+
   {
     year: '2026',
     icon: 'Briefcase',
-    title: 'Full Stack Web Development Intern — ElevanceSkills',
+    title: 'Full Stack Web Development — Eleven Skills',
     description:
-      'Ongoing internship building full-stack web applications and contributing to production-oriented development workflows.',
-    highlight: true,
+      'Completed an intensive full-stack development program, gaining practical experience in modern web development and application building.',
   },
+
   {
     year: '2026',
     icon: 'Cpu',
-    title: 'AI/ML Intern — TECHZY IT SOLUTIONS',
+    title: 'AI / ML Internship — TECHZY IT SOLUTIONS',
     description:
-      'Completed internship project on Food Delivery Time Prediction during June 2026.',
+      'Completed a one-month AI/ML internship and worked on a Food Delivery Time Prediction project using machine learning techniques.',
+    highlight: true,
   },
+
+  {
+    year: '2026',
+    icon: 'Trophy',
+    title: 'TOP 25 — Quest Global Ingenium',
+    description:
+      'CarbonWise reached the Top 25 among 3,700+ participating teams with an AI-powered carbon intelligence and smart energy management solution.',
+    highlight: true,
+  },
+
+  {
+    year: '2026',
+    icon: 'Leaf',
+    title: 'Developed CarbonWise',
+    description:
+      'Built CarbonWise, an AI-powered carbon intelligence platform combining IoT, smart appliance management, carbon analysis, and predictive intelligence.',
+  },
+
+  {
+    year: '2026',
+    icon: 'Shield',
+    title: 'Developed EcoGrid Sentinel',
+    description:
+      'Built an ESP32-based environmental monitoring prototype integrating sensors, OLED display, data collection, automation, and IoT concepts.',
+  },
+
+  {
+    year: '2026',
+    icon: 'Network',
+    title: 'Built NetSentry-AI',
+    description:
+      'Developed a network operations monitoring prototype that normalizes alerts, removes duplicates, correlates events using topology and time, and prioritizes incidents.',
+    highlight: true,
+  },
+
+  {
+    year: '2026',
+    icon: 'Brain',
+    title: 'Explored Federated Learning & Privacy',
+    description:
+      'Worked on concepts involving Federated Learning, Differential Privacy, and privacy-aware AI systems as part of my interest in responsible machine learning.',
+  },
+
   {
     year: '2026',
     icon: 'Mic',
-    title: 'Presented at CRYPTERA 2026 (CIT)',
+    title: 'Presented Research at CRYPTERA 2026',
     description:
-      'Presented ML research paper to 100+ engineers and faculty at a national inter-college symposium.',
+      'Presented an ML-focused research paper at CRYPTERA 2026, gaining experience in technical presentation and communicating research concepts.',
   },
+
   {
     year: '2026',
     icon: 'Code2',
     title: '100+ LeetCode Problems Solved',
     description:
-      'Consistent DSA practice with 100+ problems solved on LeetCode.',
+      'Crossed 100+ solved problems on LeetCode while strengthening Java-based Data Structures and Algorithms for technical interviews.',
+    highlight: true,
   },
+
   {
     year: '2026',
     icon: 'Shield',
     title: 'NASSCOM IoT Gold Certification',
     description:
-      'Earned industry-recognized Gold certification in IoT & Digital Transformation.',
+      'Earned a Gold certification in IoT and Digital Transformation, strengthening my understanding of connected systems and IoT technologies.',
   },
+
   {
     year: '2026',
-    icon: 'Cpu',
+    icon: 'Brain',
     title: 'Applied AI Certification — GUVI & HCL',
     description:
-      'Completed Applied AI (Statistics to NLP) certification, strengthening foundations in AI, ML, and NLP.',
-    highlight: true,
+      'Completed Applied AI training covering topics from statistics and machine learning to NLP, strengthening my AI/ML foundations.',
   },
+
+  {
+    year: '2026',
+    icon: 'Gamepad2',
+    title: 'Built AI Game Coach',
+    description:
+      'Developed a full-stack AI gaming assistant with game-specific coaching, persistent conversations, personalized tips, and AI-powered responses.',
+  },
+
+  {
+    year: '2026',
+    icon: 'Globe',
+    title: 'Started Mavix — Real-Time Social Platform',
+    description:
+      'Started developing a real-time social media platform to strengthen full-stack development, backend architecture, authentication, and real-time application skills.',
+  },
+
   {
     year: '2026',
     icon: 'GitBranch',
-    title: '14+ Public GitHub Repositories',
+    title: 'Growing GitHub Portfolio',
     description:
-      'Built a strong open-source presence with 14+ public repositories across AI/ML and full-stack projects.',
+      'Built and maintained 14+ public GitHub repositories covering AI/ML, full-stack development, Java DSA, IoT, and experimental projects.',
   },
 ];
