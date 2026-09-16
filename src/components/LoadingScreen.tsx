@@ -27,7 +27,7 @@ export default function LoadingScreen() {
             textShadow: '0 0 40px rgba(34, 82, 255, 0.6), 0 0 80px rgba(34, 82, 255, 0.3)',
           }}
         >
-          MA
+          Muhil's
         </div>
         <div
           className="absolute inset-0 text-6xl font-bold text-transparent font-['Geist']"
