@@ -23,11 +23,11 @@ function ProjectImage({ src, alt, project }: { src: string; alt: string; project
   const [error, setError] = useState(false);
 
   const getCategoryIcon = () => {
-    if (!project) return <Code2 size={24} />;
-    if (project.category.includes('IoT') || project.category.includes('Hardware')) return <Cpu size={24} />;
-    if (project.category.includes('AI/ML')) return <Brain size={24} />;
-    if (project.category.includes('Systems')) return <Network size={24} />;
-    return <Layers size={24} />;
+    if (!project) return <Code2 size={26} />;
+    if (project.category.includes('IoT') || project.category.includes('Hardware')) return <Cpu size={26} />;
+    if (project.category.includes('AI/ML')) return <Brain size={26} />;
+    if (project.category.includes('Systems')) return <Network size={26} />;
+    return <Layers size={26} />;
   };
 
   if (error || !src) {
@@ -36,13 +36,13 @@ function ProjectImage({ src, alt, project }: { src: string; alt: string; project
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(34,82,255,0.18),transparent_70%)]" />
         <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:24px_24px]" />
         <div className="relative z-10 flex flex-col items-center text-center">
-          <div className="w-12 h-12 rounded-xl bg-[rgba(34,82,255,0.15)] border border-[rgba(34,82,255,0.3)] flex items-center justify-center mb-3 text-[#2252FF] group-hover:scale-110 group-hover:border-[#2252FF] transition-all duration-300">
+          <div className="w-14 h-14 rounded-xl bg-[rgba(34,82,255,0.15)] border border-[rgba(34,82,255,0.3)] flex items-center justify-center mb-3 text-[#2252FF] group-hover:scale-110 group-hover:border-[#2252FF] transition-all duration-300">
             {getCategoryIcon()}
           </div>
-          <span className="text-white font-semibold text-sm sm:text-base font-['Geist'] tracking-tight mb-1">
+          <span className="text-white font-semibold text-base sm:text-lg font-['Geist'] tracking-tight mb-1">
             {project?.title || 'Interactive Project'}
           </span>
-          <span className="text-[rgba(255,255,255,0.45)] text-[11px] font-['Geist_Mono'] uppercase tracking-wider">
+          <span className="text-[rgba(255,255,255,0.45)] text-xs font-['Geist_Mono'] uppercase tracking-wider">
             {project?.badge || project?.category || 'Project Preview'}
           </span>
         </div>
@@ -61,45 +61,56 @@ function ProjectImage({ src, alt, project }: { src: string; alt: string; project
   );
 }
 
-/* ─── Featured Project Card (Large) ───────────────────── */
-function FeaturedCard({ project, index }: { project: Project; index: number }) {
+/* ─── Alternating Project Card (One by One) ───────────── */
+function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const isReversed = index % 2 !== 0;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -30 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-8 lg:gap-12 items-center`}
+      transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
+      className={`flex flex-col ${isReversed ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-8 lg:gap-12 items-center`}
     >
-      {/* Image */}
+      {/* Image / Preview Side */}
       <div className="flex-1 w-full">
-        <div className="relative group overflow-hidden rounded-2xl">
+        <div className="relative group overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.06)] hover:border-[rgba(34,82,255,0.4)] transition-all duration-500 shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
           <ProjectImage
             src={project.image}
             alt={`${project.title} project preview`}
             project={project}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(3,3,5,0.8)] to-transparent opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(3,3,5,0.7)] via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+
           {/* Award ribbon */}
           {project.award && (
-            <div className="absolute top-4 left-4 flex items-center gap-2 bg-[rgba(255,205,0,0.9)] text-[#030305] px-3 py-1.5 rounded-full text-xs font-bold font-['Geist_Mono']">
+            <div className="absolute top-4 left-4 flex items-center gap-2 bg-[rgba(255,205,0,0.95)] text-[#030305] px-3.5 py-1.5 rounded-full text-xs font-bold font-['Geist_Mono'] shadow-lg backdrop-blur-sm">
               <Award size={14} />
               {project.award}
             </div>
           )}
+
           {/* Category badge */}
-          <div className="absolute top-4 right-4 glass-card px-3 py-1 text-xs font-['Geist_Mono'] text-[rgba(255,255,255,0.8)]">
+          <div className="absolute top-4 right-4 glass-card px-3 py-1 text-xs font-['Geist_Mono'] text-[rgba(255,255,255,0.85)] border border-[rgba(255,255,255,0.12)]">
             {project.badge}
           </div>
         </div>
       </div>
 
-      {/* Content */}
+      {/* Content Side */}
       <div className="flex-1 w-full">
-        <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-['Geist'] mb-3 sm:mb-4">
+        <div className="flex items-center gap-2 mb-2 text-[#2252FF] font-['Geist_Mono'] text-xs uppercase tracking-wider">
+          <span>Project {String(index + 1).padStart(2, '0')}</span>
+          <span className="text-[rgba(255,255,255,0.2)]">/</span>
+          <span className="text-[rgba(255,255,255,0.5)]">{project.category}</span>
+        </div>
+
+        <h3 className="text-2xl sm:text-3xl font-bold text-white font-['Geist'] mb-3 sm:mb-4 tracking-tight">
           {project.title}
         </h3>
-        <p className="text-[rgba(255,255,255,0.65)] text-base leading-[1.7] font-['Geist'] mb-6">
+
+        <p className="text-[rgba(255,255,255,0.7)] text-base leading-[1.75] font-['Geist'] mb-6">
           {project.description}
         </p>
 
@@ -108,7 +119,7 @@ function FeaturedCard({ project, index }: { project: Project; index: number }) {
           {project.tech.map((tech) => (
             <span
               key={tech}
-              className="px-3 py-1 text-xs font-['Geist_Mono'] rounded-full border border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.6)] bg-[rgba(255,255,255,0.03)]"
+              className="px-3 py-1 text-xs font-['Geist_Mono'] rounded-full border border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.7)] bg-[rgba(255,255,255,0.03)] hover:border-[rgba(34,82,255,0.3)] transition-colors"
             >
               {tech}
             </span>
@@ -116,13 +127,14 @@ function FeaturedCard({ project, index }: { project: Project; index: number }) {
         </div>
 
         {/* CTAs */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-center gap-4">
           {project.github !== '#' && (
             <a
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-white font-['Geist'] text-sm group/link"
+              className="inline-flex items-center gap-2 text-white font-['Geist'] text-sm group/link hover:text-[#2252FF] transition-colors"
+              aria-label={`View ${project.title} source code on GitHub`}
             >
               <span className="relative">
                 View on GitHub
@@ -136,91 +148,11 @@ function FeaturedCard({ project, index }: { project: Project; index: number }) {
               href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[#D0FF71] font-['Geist'] text-sm group/link"
+              className="inline-flex items-center gap-2 text-[#D0FF71] font-['Geist'] text-sm px-4 py-2 rounded-lg bg-[rgba(208,255,113,0.08)] border border-[rgba(208,255,113,0.25)] hover:bg-[rgba(208,255,113,0.15)] transition-all duration-300"
+              aria-label={`Open ${project.title} live demo`}
             >
               <ExternalLink size={14} />
               <span>Live Demo</span>
-            </a>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─── Grid Project Card (Small) ───────────────────────── */
-function GridCard({ project, index }: { project: Project; index: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.4, delay: index * 0.08 }}
-      className="glass-card overflow-hidden group hover:border-[rgba(34,82,255,0.3)] transition-all duration-300"
-    >
-      {/* Image */}
-      <div className="relative overflow-hidden">
-        <ProjectImage
-          src={project.image}
-          alt={`${project.title} project preview`}
-          project={project}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(3,3,5,0.9)] via-transparent to-transparent" />
-        <div className="absolute top-3 right-3 glass-card px-2.5 py-0.5 text-[10px] font-['Geist_Mono'] text-[rgba(255,255,255,0.7)]">
-          {project.badge}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-5 sm:p-6">
-        <h3 className="text-lg font-bold text-white font-['Geist'] mb-2">
-          {project.title}
-        </h3>
-        <p className="text-[rgba(255,255,255,0.55)] text-sm leading-[1.6] font-['Geist'] mb-4 line-clamp-3">
-          {project.description}
-        </p>
-
-        {/* Tech */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {project.tech.slice(0, 4).map((tech) => (
-            <span
-              key={tech}
-              className="px-2 py-0.5 text-[10px] font-['Geist_Mono'] rounded-full border border-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.5)] bg-[rgba(255,255,255,0.03)]"
-            >
-              {tech}
-            </span>
-          ))}
-          {project.tech.length > 4 && (
-            <span className="px-2 py-0.5 text-[10px] font-['Geist_Mono'] text-[rgba(255,255,255,0.35)]">
-              +{project.tech.length - 4}
-            </span>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-4">
-          {project.github !== '#' && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[rgba(255,255,255,0.7)] hover:text-white text-sm font-['Geist'] transition-colors min-h-[44px]"
-              aria-label={`View ${project.title} on GitHub`}
-            >
-              GitHub
-              <ArrowUpRight size={14} />
-            </a>
-          )}
-          {project.demo && (
-            <a
-              href={project.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[#D0FF71] hover:text-white text-sm font-['Geist'] transition-colors min-h-[44px]"
-              aria-label={`View ${project.title} live demo`}
-            >
-              <ExternalLink size={13} />
-              Demo
             </a>
           )}
         </div>
@@ -238,9 +170,6 @@ export default function Projects() {
   const filtered = activeFilter === 'All'
     ? projects
     : projects.filter(p => p.category === activeFilter);
-
-  const featured = filtered.filter(p => p.featured);
-  const others = filtered.filter(p => !p.featured);
 
   return (
     <section id="projects" className="relative py-16 sm:py-24 lg:py-32" ref={sectionRef}>
@@ -271,7 +200,7 @@ export default function Projects() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="flex gap-2 sm:gap-3 mb-10 sm:mb-12 overflow-x-auto pb-2 no-scrollbar"
+          className="flex gap-2 sm:gap-3 mb-12 sm:mb-16 overflow-x-auto pb-2 no-scrollbar"
           role="tablist"
           aria-label="Project category filter"
         >
@@ -292,37 +221,14 @@ export default function Projects() {
           ))}
         </motion.div>
 
-        {/* Featured Projects — Large Cards */}
-        {featured.length > 0 && (
-          <div className="space-y-12 mb-16">
-            <AnimatePresence mode="wait">
-              {featured.map((project, index) => (
-                <FeaturedCard key={project.id} project={project} index={index} />
-              ))}
-            </AnimatePresence>
-          </div>
-        )}
-
-        {/* More Projects — Grid */}
-        {others.length > 0 && (
-          <>
-            {featured.length > 0 && (
-              <div className="flex items-center gap-3 mb-8">
-                <span className="w-8 h-[2px] bg-[rgba(255,255,255,0.15)]" />
-                <span className="text-[rgba(255,255,255,0.4)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
-                  More Projects
-                </span>
-              </div>
-            )}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence mode="wait">
-                {others.map((project, index) => (
-                  <GridCard key={project.id} project={project} index={index} />
-                ))}
-              </AnimatePresence>
-            </div>
-          </>
-        )}
+        {/* All Projects Arranged One-by-One (Alternating Left & Right) */}
+        <div className="space-y-16 sm:space-y-20 lg:space-y-24">
+          <AnimatePresence mode="wait">
+            {filtered.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} />
+            ))}
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );
