@@ -116,7 +116,7 @@ export default function Navbar() {
 
           {/* Mobile hamburger */}
           <button
-            className="lg:hidden text-white p-2"
+            className="lg:hidden text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-[rgba(255,255,255,0.06)] active:scale-95 transition-transform"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
@@ -127,13 +127,13 @@ export default function Navbar() {
 
       {/* Mobile menu overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-[rgba(3,3,5,0.98)] flex flex-col items-center justify-center gap-6 lg:hidden overflow-y-auto py-16">
+        <div className="fixed inset-0 z-40 bg-[rgba(3,3,5,0.98)] backdrop-blur-xl flex flex-col items-center justify-center gap-5 lg:hidden overflow-y-auto py-16 px-6">
           {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="text-white text-2xl font-['Geist'] font-semibold hover:text-[#2252FF] transition-colors"
+              className="text-white text-xl sm:text-2xl font-['Geist'] font-medium hover:text-[#2252FF] transition-colors py-2 px-6 min-h-[44px] flex items-center active:scale-95 touch-manipulation"
             >
               {link.name}
             </a>

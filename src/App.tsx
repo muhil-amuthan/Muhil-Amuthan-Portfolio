@@ -45,6 +45,11 @@ function ScrollToTop() {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
+    // Always begin at the initial page on load / refresh
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
   }, []);
 
   useEffect(() => {
@@ -54,7 +59,7 @@ function ScrollToTop() {
       if (el) {
         setTimeout(() => {
           el.scrollIntoView({ behavior: 'smooth' });
-        }, 50);
+        }, 60);
       }
     } else {
       window.scrollTo(0, 0);

@@ -127,20 +127,20 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </div>
 
         {/* CTAs */}
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {project.github !== '#' && (
             <a
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-white font-['Geist'] text-sm group/link hover:text-[#2252FF] transition-colors"
+              className="inline-flex items-center gap-2 text-white font-['Geist'] text-sm px-4 py-2.5 rounded-lg border border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.04)] hover:border-[#2252FF] hover:text-white active:scale-95 transition-all duration-300 min-h-[44px]"
               aria-label={`View ${project.title} source code on GitHub`}
             >
               <span className="relative">
                 View on GitHub
-                <span className="absolute -bottom-0.5 left-0 w-full h-[1px] bg-[#2252FF] origin-left scale-x-100 group-hover/link:scale-x-0 transition-transform duration-300" />
+                <span className="absolute -bottom-0.5 left-0 w-full h-[1px] bg-[#2252FF] origin-left scale-x-100 group-hover:scale-x-0 transition-transform duration-300" />
               </span>
-              <ArrowUpRight size={16} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight size={16} className="transition-transform" />
             </a>
           )}
           {project.demo && (
@@ -148,10 +148,10 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
               href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[#D0FF71] font-['Geist'] text-sm px-4 py-2 rounded-lg bg-[rgba(208,255,113,0.08)] border border-[rgba(208,255,113,0.25)] hover:bg-[rgba(208,255,113,0.15)] transition-all duration-300"
+              className="inline-flex items-center gap-2 text-[#D0FF71] font-['Geist'] text-sm px-4 py-2.5 rounded-lg bg-[rgba(208,255,113,0.08)] border border-[rgba(208,255,113,0.25)] hover:bg-[rgba(208,255,113,0.15)] active:scale-95 transition-all duration-300 min-h-[44px]"
               aria-label={`Open ${project.title} live demo`}
             >
-              <ExternalLink size={14} />
+              <ExternalLink size={15} />
               <span>Live Demo</span>
             </a>
           )}
