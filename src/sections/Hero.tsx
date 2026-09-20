@@ -215,8 +215,8 @@ export default function Hero() {
               />
               {/* Photo */}
               <img
-                src="/profile-photo.jpg"
-                alt="Muhil Amuthan M — AI/ML Engineer and Full Stack Developer"
+                src="/Profile_Picture_New.jpeg"
+                alt="Muhil Amuthan M — Aspiring ML Engineer and Full Stack Developer"
                 className="relative w-full h-full object-cover object-top rounded-2xl"
                 style={{
                   boxShadow: '0 0 60px rgba(34, 82, 255, 0.25), 0 0 120px rgba(34, 82, 255, 0.1)',

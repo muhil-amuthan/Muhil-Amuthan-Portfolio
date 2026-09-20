@@ -74,7 +74,7 @@ export default function About() {
             <div className="glass-card p-5 sm:p-8">
               <div className="flex items-center gap-4 mb-6">
                 <img
-                  src="/profile-photo.jpg"
+                  src="/Profile_Picture_New.jpeg"
                   alt="Muhil Amuthan M"
                   className="w-16 h-16 rounded-full object-cover object-top border-2 border-[#2252FF]"
                 />
