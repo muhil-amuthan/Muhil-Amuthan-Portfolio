@@ -14,19 +14,19 @@ export const experiences: ExperienceEntry[] = [
   {
     id: 1,
     role: "Full Stack Web Development Intern",
-    company: "ElevanceSkills",
+    company: "Elevence Skills",
     period: "2026 – Present",
     status: "ongoing",
-    description: "Currently working as a Full Stack Web Development Intern, building and improving web applications using modern development practices.",
-    tags: ["Full Stack", "Web Development", "Ongoing"]
+    description: "Currently pursuing a Full Stack Web Development Internship at Elevence Skills, developing web applications and gaining hands-on industry experience in frontend and backend workflows.",
+    tags: ["Full Stack", "React", "Web Development", "Ongoing"]
   },
   {
     id: 2,
-    role: "Artificial Intelligence & Machine Learning Intern",
+    role: "Artificial Intelligence & Machine Learning Training",
     company: "Techzy IT Solutions",
     period: "04 June 2026 – 30 June 2026",
     status: "completed",
-    description: "Completed an AI/ML internship focused on practical machine learning. Developed a Food Delivery Time Prediction system as the internship project.",
+    description: "Completed a 1-month intensive AI/ML training focused on practical machine learning. Developed a Food Delivery Time Prediction system as the project.",
     project: "Food Delivery Time Prediction",
     certificate: "/cert-techzy.png",
     tags: ["AI/ML", "Machine Learning", "Python"]

@@ -5,9 +5,11 @@ import CustomCursor from './components/CustomCursor';
 import ParticleBackground from './components/ParticleBackground';
 import LoadingScreen from './components/LoadingScreen';
 import Hero from './sections/Hero';
+import Highlights from './sections/Highlights';
 import About from './sections/About';
 import Skills from './sections/Skills';
 import Experience from './sections/Experience';
+import Achievements from './sections/Achievements';
 import Projects from './sections/Projects';
 import ChatBot from './sections/ChatBot';
 import Certifications from './sections/Certifications';
@@ -21,9 +23,11 @@ function HomePage() {
   return (
     <>
       <Hero />
+      <Highlights />
       <About />
       <Skills />
       <Experience />
+      <Achievements />
       <Projects />
       <ChatBot />
       <Certifications />

@@ -4,7 +4,7 @@ import { ArrowRight, Github, Linkedin, FileText, Download, Code2 } from 'lucide-
 
 export default function Hero() {
   const [typedText, setTypedText] = useState('');
-  const roles = ['AI/ML Engineer', 'Full-Stack Developer', 'Embedded Engineer', 'Federated Learning Researcher', 'IoT Innovator'];
+  const roles = ['Aspiring ML Engineer', 'Full-Stack Developer', 'Embedded Systems Engineer', 'IoT Developer'];
   const [roleIndex, setRoleIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -88,7 +88,7 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.3 }}
               className="text-3xl sm:text-4xl md:text-5xl lg:text-[60px] font-extrabold leading-[1.1] font-['Geist'] luminous-sweep-headline mb-5"
             >
-              A Tech-Driven, Collaborative, and Innovation-Focused Engineering Student
+              B.E. ECE Student | Aspiring ML Engineer | Full-Stack &amp; IoT Developer
             </motion.h1>
 
             <motion.div
@@ -109,7 +109,7 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="text-[rgba(255,255,255,0.7)] text-base sm:text-lg font-['Geist'] leading-relaxed mb-8 max-w-[560px] mx-auto lg:mx-0"
             >
-              Hi, I'm <span className="text-white font-semibold">Muhil Amuthan M</span>. An aspiring AI/ML and software engineer passionate about building impactful, scalable solutions that address real-world challenges and create meaningful change.
+              Hi, I'm <span className="text-white font-semibold">Muhil Amuthan M</span>. I build practical solutions across Machine Learning, Full-Stack Development, and Embedded Systems, with a focus on solving real-world problems through software and hardware.
             </motion.p>
 
             <motion.div
@@ -179,7 +179,7 @@ export default function Hero() {
                 LinkedIn
               </a>
               <a
-                href="https://leetcode.com/u/Muhil-Amuthan_M"
+                href="https://leetcode.com/u/Muhil-Amuthan-M/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="glass-card text-white px-4 py-2 sm:py-2.5 rounded-lg font-['Geist'] text-sm flex items-center gap-2 hover:border-[rgba(255,161,22,0.4)] hover:shadow-[0_0_20px_rgba(255,161,22,0.1)] transition-all duration-300"
@@ -253,7 +253,7 @@ export default function Hero() {
           className="mt-12 sm:mt-16 lg:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6"
         >
           {[
-            { number: '7+', label: 'Innovative Projects' },
+            { number: '12+', label: 'Projects Built' },
             { number: '7', label: 'Certifications Earned' },
             { number: 'Top 25', label: 'Quest Global Ingenium' },
             { number: '100+', label: 'LeetCode Problems' },

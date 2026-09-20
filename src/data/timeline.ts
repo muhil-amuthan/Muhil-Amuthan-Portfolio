@@ -26,7 +26,7 @@ export const timelineEvents: TimelineEvent[] = [
   {
     year: '2024',
     icon: 'GraduationCap',
-    title: 'Joined V.S.B. Engineering College',
+    title: 'Joined V.S.B Engineering College, Karur',
     description:
       'Started B.E. in Electronics and Communication Engineering with a Minor in Computer Science, combining electronics, programming, and software development.',
     highlight: true,
@@ -67,17 +67,18 @@ export const timelineEvents: TimelineEvent[] = [
   {
     year: '2026',
     icon: 'Briefcase',
-    title: 'Full Stack Web Development — Eleven Skills',
+    title: 'Full Stack Web Development Intern — Elevence Skills',
     description:
-      'Completed an intensive full-stack development program, gaining practical experience in modern web development and application building.',
+      'Currently interning at Elevence Skills as a Full Stack Web Developer, working on modern web applications, frontend interfaces, and backend integration.',
+    highlight: true,
   },
 
   {
     year: '2026',
     icon: 'Cpu',
-    title: 'AI / ML Internship — TECHZY IT SOLUTIONS',
+    title: 'AI / ML Training — Techzy IT Solutions',
     description:
-      'Completed a one-month AI/ML internship and worked on a Food Delivery Time Prediction project using machine learning techniques.',
+      'Completed a one-month AI/ML training and worked on a Food Delivery Time Prediction project using machine learning techniques.',
     highlight: true,
   },
 
@@ -92,10 +93,28 @@ export const timelineEvents: TimelineEvent[] = [
 
   {
     year: '2026',
+    icon: 'Award',
+    title: 'SIH 2026 Internal Hackathon — Shortlisted',
+    description:
+      'Shortlisted in Smart India Hackathon 2026 Internal Hackathon for Hardware Problem SIH26178, organized by Qualcomm Inc.',
+    highlight: true,
+  },
+
+  {
+    year: '2026',
     icon: 'Leaf',
     title: 'Developed CarbonWise',
     description:
       'Built CarbonWise, an AI-powered carbon intelligence platform combining IoT, smart appliance management, carbon analysis, and predictive intelligence.',
+  },
+
+  {
+    year: '2026',
+    icon: 'Shield',
+    title: 'Built Smart PPE Compliance System',
+    description:
+      'Developed a fail-safe industrial safety system using ESP32, ESP-NOW, RFID authentication, and machine interlocking for PPE compliance monitoring.',
+    highlight: true,
   },
 
   {
@@ -177,6 +196,6 @@ export const timelineEvents: TimelineEvent[] = [
     icon: 'GitBranch',
     title: 'Growing GitHub Portfolio',
     description:
-      'Built and maintained 14+ public GitHub repositories covering AI/ML, full-stack development, Java DSA, IoT, and experimental projects.',
+      'Built and maintained 16+ public GitHub repositories covering AI/ML, full-stack development, Java DSA, IoT, and experimental projects.',
   },
 ];

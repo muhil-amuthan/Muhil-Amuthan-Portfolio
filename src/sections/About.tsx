@@ -89,7 +89,7 @@ export default function About() {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center gap-3 text-[rgba(255,255,255,0.7)] text-sm">
                   <GraduationCap size={16} className="text-[#2252FF]" />
-                  <span>V.S.B. Engineering College, Karur TN</span>
+                  <span>V.S.B Engineering College, Karur</span>
                 </div>
                 <div className="flex items-center gap-3 text-[rgba(255,255,255,0.7)] text-sm">
                   <Target size={16} className="text-[#FFCD00]" />
@@ -107,7 +107,7 @@ export default function About() {
 
               <div className="border-t border-[rgba(255,255,255,0.08)] pt-6">
                 <p className="text-[rgba(255,255,255,0.7)] text-[15px] leading-[1.7] font-['Geist'] italic">
-                  "I am a passionate engineering student obsessed with building AI systems that solve real-world problems. From federated learning models to full-stack web applications, I love shipping products that create measurable impact."
+                  "I'm a 3rd-year ECE student who builds practical projects across Machine Learning, Full-Stack Development, and Embedded Systems. From AI-powered carbon platforms to ESP32-based safety systems, I focus on solving real problems with both software and hardware."
                 </p>
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function About() {
           className="mt-10 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8"
         >
           {[
-            { icon: Code2, value: 7, suffix: '+', label: 'Projects Built' },
+            { icon: Code2, value: 12, suffix: '+', label: 'Projects Built' },
             { icon: Award, value: 100, suffix: '+', label: 'LeetCode Problems' },
             { icon: BookOpen, value: 7, suffix: '', label: 'Certifications' },
             { icon: Trophy, value: 25, suffix: '', label: 'Quest Global Rank', prefix: 'Top ' },

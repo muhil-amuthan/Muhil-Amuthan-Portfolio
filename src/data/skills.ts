@@ -57,8 +57,8 @@ export const skillCategories: SkillCategory[] = [
       { name: 'Deep Learning', level: 68 },
       { name: 'GenAI / NLP', level: 58 },
       { name: 'Federated Learning', level: 45 },
-      { name: 'Differential Privacy', level: 72 },
-      { name: 'Pandas / NumPy', level: 82 },
+      { name: 'Pandas / NumPy / Matplotlib', level: 82 },
+      { name: 'scikit-learn', level: 75 },
     ],
   },
 
@@ -81,6 +81,8 @@ export const skillCategories: SkillCategory[] = [
     skills: [
       { name: 'ESP32', level: 82 },
       { name: 'Embedded Systems', level: 78 },
+      { name: 'ESP-NOW', level: 72 },
+      { name: 'RFID', level: 68 },
       { name: 'IoT Architecture', level: 82 },
       { name: 'MQTT', level: 72 },
       { name: 'Computer Networks', level: 78 },
