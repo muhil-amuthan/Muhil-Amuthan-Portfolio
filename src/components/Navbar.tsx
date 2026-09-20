@@ -6,11 +6,12 @@ const navLinks = [
   { name: 'Home', href: '/#home' },
   { name: 'About', href: '/#about' },
   { name: 'Skills', href: '/#skills' },
+  { name: 'Profiles', href: '/#coding-profiles' },
   { name: 'Experience', href: '/#experience' },
-  { name: 'Timeline', href: '/#timeline' },
   { name: 'Projects', href: '/#projects' },
   { name: 'Certifications', href: '/#certifications' },
-  { name: 'Profiles', href: '/#coding-profiles' },
+  { name: 'Timeline', href: '/#timeline' },
+  { name: 'ChatBot', href: '/#chatbot' },
   { name: 'Contact', href: '/#contact' },
 ];
 

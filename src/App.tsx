@@ -27,13 +27,13 @@ function HomePage() {
       <Highlights />
       <About />
       <Skills />
+      <CodingProfiles />
       <Experience />
-      <Timeline />
       <Achievements />
       <Projects />
-      <ChatBot />
       <Certifications />
-      <CodingProfiles />
+      <Timeline />
+      <ChatBot />
       <Contact />
       <Footer />
     </>

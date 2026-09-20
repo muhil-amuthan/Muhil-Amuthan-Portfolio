@@ -57,9 +57,21 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '200px 0px', amount: 0.01 }}
       transition={{ duration: 0.4 }}
-      className={`flex flex-col ${isReversed ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-8 lg:gap-12 items-center`}
+      className={`flex flex-col ${isReversed ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-5 sm:gap-8 lg:gap-12 items-center`}
     >
-      {/* Image / Preview Side */}
+      {/* 1. Mobile-only Project Header: Name & Category First */}
+      <div className="w-full lg:hidden">
+        <div className="flex items-center gap-2 mb-2 text-[#2252FF] font-['Geist_Mono'] text-xs uppercase tracking-wider">
+          <span>Project {String(index + 1).padStart(2, '0')}</span>
+          <span className="text-[rgba(255,255,255,0.2)]">/</span>
+          <span className="text-[rgba(255,255,255,0.5)]">{project.category}</span>
+        </div>
+        <h3 className="text-2xl sm:text-3xl font-bold text-white font-['Geist'] tracking-tight">
+          {project.title}
+        </h3>
+      </div>
+
+      {/* 2. Project Picture Side */}
       <div className="flex-1 w-full">
         <div className="relative group overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.06)] hover:border-[rgba(34,82,255,0.4)] transition-all duration-500 shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
           <ProjectImage
@@ -84,18 +96,22 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </div>
       </div>
 
-      {/* Content Side */}
+      {/* 3. Content Side: Name (Desktop), Explanation & 4. Links */}
       <div className="flex-1 w-full">
-        <div className="flex items-center gap-2 mb-2 text-[#2252FF] font-['Geist_Mono'] text-xs uppercase tracking-wider">
-          <span>Project {String(index + 1).padStart(2, '0')}</span>
-          <span className="text-[rgba(255,255,255,0.2)]">/</span>
-          <span className="text-[rgba(255,255,255,0.5)]">{project.category}</span>
+        {/* Desktop-only Project Header */}
+        <div className="hidden lg:block">
+          <div className="flex items-center gap-2 mb-2 text-[#2252FF] font-['Geist_Mono'] text-xs uppercase tracking-wider">
+            <span>Project {String(index + 1).padStart(2, '0')}</span>
+            <span className="text-[rgba(255,255,255,0.2)]">/</span>
+            <span className="text-[rgba(255,255,255,0.5)]">{project.category}</span>
+          </div>
+
+          <h3 className="text-2xl sm:text-3xl font-bold text-white font-['Geist'] mb-3 sm:mb-4 tracking-tight">
+            {project.title}
+          </h3>
         </div>
 
-        <h3 className="text-2xl sm:text-3xl font-bold text-white font-['Geist'] mb-3 sm:mb-4 tracking-tight">
-          {project.title}
-        </h3>
-
+        {/* 3. Explanation of the Project */}
         <p className="text-[rgba(255,255,255,0.7)] text-base leading-[1.75] font-['Geist'] mb-6">
           {project.description}
         </p>
