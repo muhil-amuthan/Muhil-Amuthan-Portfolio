@@ -143,9 +143,23 @@ export default function Experience() {
 
                   {/* Project highlight */}
                   {exp.project && (
-                    <div className="flex items-center gap-2 mb-4 p-3 rounded-lg bg-[rgba(34,82,255,0.08)] border border-[rgba(34,82,255,0.15)]">
-                      <span className="text-[rgba(255,255,255,0.4)] text-xs font-['Geist_Mono'] uppercase">Project:</span>
-                      <span className="text-[#2252FF] text-sm font-['Geist'] font-semibold">{exp.project}</span>
+                    <div className="flex items-center justify-between gap-2 mb-4 p-3 rounded-lg bg-[rgba(34,82,255,0.08)] border border-[rgba(34,82,255,0.15)]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[rgba(255,255,255,0.4)] text-xs font-['Geist_Mono'] uppercase">Project:</span>
+                        <span className="text-[#2252FF] text-sm font-['Geist'] font-semibold">{exp.project}</span>
+                      </div>
+                      {exp.projectUrl && (
+                        <a
+                          href={exp.projectUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-[#D0FF71] text-xs font-['Geist'] hover:underline shrink-0"
+                          aria-label={`View ${exp.project} live demo`}
+                        >
+                          <ExternalLink size={12} />
+                          <span>Live Demo</span>
+                        </a>
+                      )}
                     </div>
                   )}
 

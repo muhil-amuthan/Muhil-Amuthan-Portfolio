@@ -125,6 +125,7 @@ export const projects: Project[] = [
     github: "https://github.com/muhil-amuthan/Food-Delivery-Time-Prediction",
     category: "AI/ML",
     image: "/images/projects/food-delivery-prediction.png",
+    demo: "https://food-delivery-time-prediction-0728.streamlit.app/",
   },
   {
     id: 12,

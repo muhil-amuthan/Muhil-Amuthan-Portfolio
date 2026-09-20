@@ -45,7 +45,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     keywords: ['experience', 'internship', 'intern', 'elevence', 'techzy', 'bsnl', 'training'],
     response:
-      'Muhil\'s experience includes:\n\n1. Full Stack Web Development Intern — Elevence Skills (2026 – Present, Ongoing)\n2. AI/ML Training — Techzy IT Solutions (June 2026, 1 month)\n   Project: Food Delivery Time Prediction\n3. In-Plant Training — BSNL Madurai SSA (June 2025, 1 Week)\n\nHe is also Technical Presenter & Student Coordinator at IEEE.',
+      'Muhil\'s experience includes:\n\n1. Full Stack Web Development Intern — Elevence Skills (2026 – Present, Ongoing)\n2. AI/ML Training — Techzy IT Solutions (June 2026, 1 month)\n   Project: Food Delivery Time Prediction (Demo: https://food-delivery-time-prediction-0728.streamlit.app/)\n3. In-Plant Training — BSNL Madurai SSA (June 2025, 1 Week)\n\nHe is also Technical Presenter & Student Coordinator at IEEE.',
   },
   {
     keywords: ['available', 'hire', 'job', 'opportunity', 'work with', 'collaboration'],

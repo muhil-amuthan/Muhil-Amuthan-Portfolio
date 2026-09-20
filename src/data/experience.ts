@@ -6,6 +6,7 @@ export interface ExperienceEntry {
   status: 'ongoing' | 'completed';
   description: string;
   project?: string;
+  projectUrl?: string;
   certificate?: string;
   tags: string[];
 }
@@ -28,6 +29,7 @@ export const experiences: ExperienceEntry[] = [
     status: "completed",
     description: "Completed a 1-month intensive AI/ML training focused on practical machine learning. Developed a Food Delivery Time Prediction system as the project.",
     project: "Food Delivery Time Prediction",
+    projectUrl: "https://food-delivery-time-prediction-0728.streamlit.app/",
     certificate: "/cert-techzy.png",
     tags: ["AI/ML", "Machine Learning", "Python"]
   },
