@@ -9,6 +9,7 @@ import Highlights from './sections/Highlights';
 import About from './sections/About';
 import Skills from './sections/Skills';
 import Experience from './sections/Experience';
+import Timeline from './sections/Timeline';
 import Achievements from './sections/Achievements';
 import Projects from './sections/Projects';
 import ChatBot from './sections/ChatBot';
@@ -27,6 +28,7 @@ function HomePage() {
       <About />
       <Skills />
       <Experience />
+      <Timeline />
       <Achievements />
       <Projects />
       <ChatBot />

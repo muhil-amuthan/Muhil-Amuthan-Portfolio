@@ -1,23 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Linkedin, Github, MapPin, Phone, Copy, Check, Send, ArrowUpRight, Code2, FileText } from 'lucide-react';
 import Toast from '../components/Toast';
 import { PORTFOLIO_LINKS } from '../data/portfolio';
-
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setInView(true);
-    }, { threshold });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-}
+import { useInView } from '../hooks/useInView';
 
 interface ContactCardProps {
   icon: React.ComponentType<{ size?: number; className?: string }>;

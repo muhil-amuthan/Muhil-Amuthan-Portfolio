@@ -1,25 +1,11 @@
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GraduationCap, MapPin, Languages, Target, Award, BookOpen, Code2, Trophy } from 'lucide-react';
-
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setInView(true);
-    }, { threshold });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-}
+import { useInView } from '../hooks/useInView';
 
 function AnimatedCounter({ end, duration = 2000, suffix = '' }: { end: number; duration?: number; suffix?: string }) {
   const [count, setCount] = useState(0);
-  const { ref, inView } = useInView(0.3);
+  const { ref, inView } = useInView(0.05);
 
   useEffect(() => {
     if (!inView) return;

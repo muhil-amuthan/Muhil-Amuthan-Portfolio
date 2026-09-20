@@ -1,22 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, Award, ExternalLink, Code2, Cpu, Brain, Network, Layers } from 'lucide-react';
 import { projects, categories, type Project } from '../data/projects';
-
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setInView(true);
-    }, { threshold });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-}
+import { useInView } from '../hooks/useInView';
 
 /* ─── Image with Fallback ─────────────────────────────── */
 function ProjectImage({ src, alt, project }: { src: string; alt: string; project?: Project }) {
@@ -67,10 +53,10 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -30 }}
-      transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '200px 0px', amount: 0.01 }}
+      transition={{ duration: 0.4 }}
       className={`flex flex-col ${isReversed ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-8 lg:gap-12 items-center`}
     >
       {/* Image / Preview Side */}
@@ -223,7 +209,7 @@ export default function Projects() {
 
         {/* All Projects Arranged One-by-One (Alternating Left & Right) */}
         <div className="space-y-16 sm:space-y-20 lg:space-y-24">
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             {filtered.map((project, index) => (
               <ProjectCard key={project.id} project={project} index={index} />
             ))}

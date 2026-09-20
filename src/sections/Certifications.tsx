@@ -1,25 +1,42 @@
-import { useRef, useEffect, useState, Suspense } from 'react';
+import { useRef, useState, useEffect, Suspense, Component, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Float, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { certifications } from '../data/certifications';
-import { timelineEvents } from '../data/timeline';
-import { ExternalLink, Award, Hash } from 'lucide-react';
+import { ExternalLink, Award, Hash, ShieldCheck } from 'lucide-react';
+import { useInView } from '../hooks/useInView';
 
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setInView(true);
-    }, { threshold });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
-  return { ref, inView };
+/* WebGL Error Boundary to prevent 3D scene crashes from breaking the whole page */
+interface ErrorBoundaryProps {
+  fallback: ReactNode;
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class WebGLErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.warn('3D WebGL scene error caught safely:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
 }
 
 /* Credential Plane for 3D sphere */
@@ -82,25 +99,55 @@ const categoryColors: Record<string, string> = {
   'Programming': '#8B5CF6',
 };
 
+/* Certificate Thumbnail with image fallback */
+function CertThumbnail({ src, alt }: { src: string; alt: string }) {
+  const [error, setError] = useState(false);
+
+  if (error || !src) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-[#0c1222] to-[#04060a] flex flex-col items-center justify-center p-3 text-center">
+        <ShieldCheck size={28} className="text-[#2252FF] mb-1 opacity-80" />
+        <span className="text-[rgba(255,255,255,0.4)] text-[10px] font-['Geist_Mono'] uppercase">
+          Verified Credential
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      loading="lazy"
+      onError={() => setError(true)}
+    />
+  );
+}
+
 export default function Certifications() {
-  const { ref: sectionRef, inView } = useInView(0.1);
-  const [showSphere, setShowSphere] = useState(false);
+  const { ref: sectionRef, inView } = useInView(0.02);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    if (inView) setShowSphere(true);
-  }, [inView]);
+    const checkDesktop = () => {
+      setIsDesktop(typeof window !== 'undefined' && window.innerWidth >= 1024);
+    };
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop, { passive: true });
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   return (
     <section id="certifications" className="relative py-16 sm:py-24 lg:py-32" ref={sectionRef}>
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
+          transition={{ duration: 0.5 }}
+          className="mb-12 sm:mb-16"
         >
           <div className="flex items-center gap-3 mb-4">
             <span className="w-8 h-[2px] bg-[#2252FF]" />
@@ -112,33 +159,23 @@ export default function Certifications() {
             Credentials &amp; Certifications
           </h2>
           <p className="text-[rgba(255,255,255,0.5)] text-base max-w-[560px]">
-            Industry-recognized credentials in AI, IoT, and Software Development from leading organizations.
+            Industry-recognized credentials in AI, IoT, and Software Development from leading global organizations.
           </p>
         </motion.div>
 
-        {/* Certification Cards Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-20"
-        >
+        {/* Certification Cards Grid — Mobile & Desktop Friendly */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-16 sm:mb-20">
           {certifications.map((cert, i) => (
             <motion.div
               key={cert.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
+              transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.3) }}
               className="glass-card p-4 group hover:border-[rgba(34,82,255,0.4)] hover:shadow-[0_0_20px_rgba(34,82,255,0.15)] transition-all duration-300 flex flex-col"
             >
               {/* Thumbnail */}
               <div className="relative rounded-lg overflow-hidden mb-4 bg-white/5" style={{ aspectRatio: '4/3' }}>
-                <img
-                  src={cert.image}
-                  alt={`${cert.name} certificate`}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
+                <CertThumbnail src={cert.image} alt={`${cert.name} certificate`} />
                 {/* Category badge */}
                 <span
                   className="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-['Geist_Mono'] font-bold"
@@ -154,12 +191,12 @@ export default function Certifications() {
 
               {/* Details */}
               <div className="flex-1 flex flex-col">
-                <h4 className="text-white text-sm font-semibold font-['Geist'] leading-snug mb-1 line-clamp-2">
+                <h3 className="text-white text-sm font-semibold font-['Geist'] leading-snug mb-1 line-clamp-2">
                   {cert.name}
-                </h4>
+                </h3>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <Award size={11} className="text-[#2252FF] shrink-0" />
-                  <p className="text-[rgba(255,255,255,0.5)] text-[11px] font-['Geist_Mono'] line-clamp-1">
+                  <Award size={12} className="text-[#2252FF] shrink-0" />
+                  <p className="text-[rgba(255,255,255,0.55)] text-[11px] font-['Geist_Mono'] line-clamp-1">
                     {cert.issuer}
                   </p>
                 </div>
@@ -175,135 +212,95 @@ export default function Certifications() {
                   </div>
                 )}
 
-                {/* View Certificate button */}
+                {/* View Certificate button (touch-friendly min 44px) */}
                 <div className="mt-auto pt-2 border-t border-[rgba(255,255,255,0.06)]">
                   <button
                     onClick={() => setActiveModal(cert.image)}
-                    className="w-full flex items-center justify-center gap-1.5 text-[#2252FF] text-[11px] font-['Geist_Mono'] hover:text-white transition-colors py-1.5 hover:bg-[rgba(34,82,255,0.1)] rounded"
+                    className="w-full flex items-center justify-center gap-1.5 text-[#2252FF] text-[12px] font-['Geist_Mono'] hover:text-white transition-colors py-2.5 min-h-[44px] hover:bg-[rgba(34,82,255,0.1)] active:scale-95 rounded-lg"
                     aria-label={`View ${cert.name} certificate`}
                   >
-                    <ExternalLink size={11} />
+                    <ExternalLink size={13} />
                     View Certificate
                   </button>
                 </div>
               </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
 
-        {/* 3D Credential Sphere */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mb-24"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <span className="w-8 h-[2px] bg-[#2252FF]" />
-            <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
-              Interactive Credential Vault
-            </span>
-          </div>
-          <div
-            className="relative rounded-2xl overflow-hidden"
-            style={{
-              height: 'clamp(300px, 50vh, 500px)',
-              background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(2, 19, 33, 0.6), #030305)',
-            }}
+        {/* 3D Credential Vault (Rendered with WebGLErrorBoundary) */}
+        <div className="hidden lg:block">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            {showSphere && (
-              <Suspense fallback={
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-[rgba(255,255,255,0.5)] font-['Geist_Mono'] text-sm">Loading 3D Scene...</div>
-                </div>
-              }>
-                <Canvas camera={{ position: [0, 0, 7], fov: 45 }}>
-                  <CredentialScene />
-                </Canvas>
-              </Suspense>
-            )}
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-              <p className="text-[rgba(255,255,255,0.35)] text-xs font-['Geist_Mono']">
-                Interactive 3D Credential Vault — Drag to rotate
-              </p>
-              <p className="text-[rgba(255,255,255,0.25)] text-xs font-['Geist_Mono'] hidden sm:block">
-                {certifications.length} Credentials
-              </p>
+            <div className="flex items-center gap-3 mb-6">
+              <span className="w-8 h-[2px] bg-[#2252FF]" />
+              <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
+                Interactive Credential Vault
+              </span>
             </div>
-          </div>
-        </motion.div>
-
-        {/* Journey Timeline */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <div className="flex items-center gap-3 mb-8">
-            <span className="w-8 h-[2px] bg-[#FFCD00]" />
-            <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
-              Journey &amp; Milestones
-            </span>
-          </div>
-          <h3 className="text-2xl lg:text-3xl font-bold text-white font-['Geist'] mb-12">
-            My Path So Far
-          </h3>
-
-          <div className="relative">
-            {/* Vertical Line */}
-            <div className="absolute left-4 md:left-1/2 md:-translate-x-[1px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#2252FF] via-[#FFCD00] to-[#D0FF71]" />
-
-            <div className="space-y-8">
-              {timelineEvents.map((event, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
-                  animate={inView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.5 + index * 0.08 }}
-                  className={`relative flex ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-start gap-6 md:gap-12`}
-                >
-                  {/* Dot */}
-                  <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#030305] border-2 border-[#FFCD00] z-10 mt-2"
-                    style={event.highlight ? { boxShadow: '0 0 15px rgba(255, 205, 0, 0.5)', borderColor: '#FFCD00' } : {}}
-                  />
-
-                  {/* Content */}
-                  <div className={`ml-12 md:ml-0 md:w-[calc(50%-2rem)] ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                    <div className={`glass-card p-5 hover:border-[rgba(255,205,0,0.3)] transition-all duration-300 ${event.highlight ? 'border-[rgba(255,205,0,0.3)]' : ''}`}>
-                      <span className="text-[#2252FF] text-xs font-['Geist_Mono'] mb-2 block">
-                        {event.year}
-                      </span>
-                      <h4 className="text-white font-semibold font-['Geist'] mb-2">
-                        {event.title}
-                      </h4>
-                      <p className="text-[rgba(255,255,255,0.6)] text-sm leading-relaxed">
-                        {event.description}
-                      </p>
-                    </div>
+            <div
+              className="relative rounded-2xl overflow-hidden border border-[rgba(255,255,255,0.06)]"
+              style={{
+                height: '420px',
+                background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(2, 19, 33, 0.6), #030305)',
+              }}
+            >
+              <WebGLErrorBoundary
+                fallback={
+                  <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
+                    <ShieldCheck size={48} className="text-[#2252FF] mb-3 opacity-60" />
+                    <span className="text-white font-['Geist'] text-base font-semibold mb-1">
+                      Credential Vault Verified
+                    </span>
+                    <span className="text-[rgba(255,255,255,0.4)] text-xs font-['Geist_Mono']">
+                      All {certifications.length} credentials certified and verified
+                    </span>
                   </div>
-
-                  {/* Spacer */}
-                  <div className="hidden md:block md:w-[calc(50%-2rem)]" />
-                </motion.div>
-              ))}
+                }
+              >
+                {isDesktop && (
+                  <Suspense
+                    fallback={
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-[rgba(255,255,255,0.5)] font-['Geist_Mono'] text-sm">Loading 3D Vault...</div>
+                      </div>
+                    }
+                  >
+                    <Canvas camera={{ position: [0, 0, 7], fov: 45 }}>
+                      <CredentialScene />
+                    </Canvas>
+                  </Suspense>
+                )}
+              </WebGLErrorBoundary>
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between pointer-events-none">
+                <p className="text-[rgba(255,255,255,0.35)] text-xs font-['Geist_Mono']">
+                  Interactive 3D Credential Vault — Drag to rotate
+                </p>
+                <p className="text-[rgba(255,255,255,0.25)] text-xs font-['Geist_Mono']">
+                  {certifications.length} Credentials
+                </p>
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
 
       {/* Certificate Modal Lightbox */}
       {activeModal && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 backdrop-blur-md"
           onClick={() => setActiveModal(null)}
           role="dialog"
           aria-modal="true"
           aria-label="Certificate viewer"
         >
-          <div className="relative max-w-4xl w-full max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+          <div className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setActiveModal(null)}
-              className="absolute -top-10 right-0 text-white/60 hover:text-white font-['Geist_Mono'] text-sm transition-colors"
+              className="self-end mb-2 text-white/70 hover:text-white font-['Geist_Mono'] text-sm px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all min-h-[44px]"
               aria-label="Close certificate viewer"
             >
               ✕ Close
@@ -311,7 +308,7 @@ export default function Certifications() {
             <img
               src={activeModal}
               alt="Certificate"
-              className="w-full h-auto max-h-[85vh] object-contain rounded-xl"
+              className="w-full h-auto max-h-[80vh] object-contain rounded-xl border border-white/10 shadow-2xl"
             />
           </div>
         </div>

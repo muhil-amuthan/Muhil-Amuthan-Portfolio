@@ -1,22 +1,8 @@
-import { useRef, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, CheckCircle2, Clock, ExternalLink, Tag } from 'lucide-react';
 import { experiences } from '../data/experience';
-
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setInView(true);
-    }, { threshold });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-}
+import { useInView } from '../hooks/useInView';
 
 export default function Experience() {
   const { ref: sectionRef, inView } = useInView(0.1);

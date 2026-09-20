@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
 import { knowledgeBase, defaultResponse, suggestedQuestions } from '../data/chatbot-knowledge';
+import { useInView } from '../hooks/useInView';
 
 interface Message {
   id: number;
@@ -20,21 +21,6 @@ function getBotResponse(input: string): string {
     }
   }
   return defaultResponse;
-}
-
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setInView(true);
-    }, { threshold });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
-  return { ref, inView };
 }
 
 export default function ChatBot() {
