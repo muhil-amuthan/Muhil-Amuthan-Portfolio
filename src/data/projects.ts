@@ -28,6 +28,7 @@ export const projects: Project[] = [
     image: "/carbonwise-dashboard.png",
     award: "Top 25 / 3700+ Teams — Quest Global Ingenium 2026",
     featured: true,
+    demo: "https://carbon-wise-ma0728.streamlit.app/",
   },
   {
     id: 7,

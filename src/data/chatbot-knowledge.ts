@@ -25,7 +25,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     keywords: ['carbonwise', 'carbon', 'quest global', 'ingenium', 'award', 'top 25'],
     response:
-      'CarbonWise is Muhil\'s flagship project — a real-time grid carbon intelligence system that placed Top 25 out of 3,700+ teams at Quest Global Ingenium 2026! It computes Carbon Intensity across 15-minute intervals using ML, with a FastAPI backend, React dashboard, cloud DB, and AI energy report generator.',
+      'CarbonWise is Muhil\'s flagship project — a real-time grid carbon intelligence system that placed Top 25 out of 3,700+ teams at Quest Global Ingenium 2026! It computes Carbon Intensity across 15-minute intervals using ML, with a FastAPI backend, React dashboard, cloud DB, and AI energy report generator. Live Demo: https://carbon-wise-ma0728.streamlit.app/',
   },
   {
     keywords: ['ppe', 'safety', 'interlock', 'esp-now', 'hardware', 'embedded'],
