@@ -43,9 +43,9 @@ export const knowledgeBase: KnowledgeEntry[] = [
       'FedMed-AI is a federated learning framework for privacy-preserving lung cancer detection. It implements differential privacy and secure aggregation protocols to train AI on distributed medical data without sharing patient information.',
   },
   {
-    keywords: ['experience', 'internship', 'intern', 'elevence', 'techzy', 'bsnl', 'training'],
+    keywords: ['experience', 'internship', 'intern', 'elevence', 'techzy', 'bsnl', 'pega', 'pegasystems', 'smartbridge', 'training'],
     response:
-      'Muhil\'s experience includes:\n\n1. Full Stack Web Development Intern — Elevence Skills (2026 – Present, Ongoing)\n2. AI/ML Training — Techzy IT Solutions (June 2026, 1 month)\n   Project: Food Delivery Time Prediction (Demo: https://food-delivery-time-prediction-0728.streamlit.app/)\n3. In-Plant Training — BSNL Madurai SSA (June 2025, 1 Week)\n\nHe is also Technical Presenter & Student Coordinator at IEEE.',
+      'Muhil\'s experience includes:\n\n1. Full Stack Web Development Intern — Elevence Skills (2026 – Present, Ongoing)\n2. National Internship Program — Pegasystems Worldwide India & SmartBridge (August – September 2026, 60 Hours, Completed)\n   Focus Areas: Workflow automation, low-code technologies, and real-world project implementation\n   Certificate ID: PEGA-SW-NIP-2026-1000\n3. AI/ML Training — Techzy IT Solutions (June 2026, 1 month)\n   Project: Food Delivery Time Prediction (Demo: https://food-delivery-time-prediction-0728.streamlit.app/)\n4. In-Plant Training — BSNL Madurai SSA (June 2025, 1 Week)\n\nHe is also Technical Presenter & Student Coordinator at IEEE.',
   },
   {
     keywords: ['available', 'hire', 'job', 'opportunity', 'work with', 'collaboration'],
@@ -53,9 +53,9 @@ export const knowledgeBase: KnowledgeEntry[] = [
       `Yes! Muhil is actively looking for internships in Software Engineering, AI/ML, or Full-Stack Development. Reach him at ${PORTFOLIO_LINKS.email} or through the contact form!`,
   },
   {
-    keywords: ['certifications', 'certified', 'courses', 'guvi', 'hcl', 'cisco', 'nptel', 'nasscom', 'infosys', 'aws'],
+    keywords: ['certifications', 'certified', 'courses', 'guvi', 'hcl', 'cisco', 'nptel', 'nasscom', 'infosys', 'aws', 'pega', 'smartbridge'],
     response:
-      `Muhil holds ${CERTIFICATION_COUNT} certifications:\n\n1. Applied AI (Statistics to NLP) — GUVI & HCL\n2. Introduction to IoT — Cisco Networking Academy\n3. Analog Circuits (Elite) — NPTEL, IIT Bombay\n4. IoT & Digital Transformation (Gold) — NASSCOM FutureSkills Prime\n5. Introduction to Deep Learning — Infosys Springboard\n6. Introduction to Artificial Intelligence — Infosys Springboard\n7. Fundamentals of Generative AI — AWS Training & Certification`,
+      `Muhil holds ${CERTIFICATION_COUNT} certifications:\n\n1. National Internship Program (PEGA-SW-NIP-2026-1000) — Pegasystems & SmartBridge\n2. Applied AI (Statistics to NLP) — GUVI & HCL\n3. Introduction to IoT — Cisco Networking Academy\n4. Analog Circuits (Elite) — NPTEL, IIT Bombay\n5. IoT & Digital Transformation (Gold) — NASSCOM FutureSkills Prime\n6. Introduction to Deep Learning — Infosys Springboard\n7. Introduction to Artificial Intelligence — Infosys Springboard\n8. Fundamentals of Generative AI — AWS Training & Certification`,
   },
   {
     keywords: ['education', 'college', 'university', 'study', 'cgpa', 'degree', 'vsb'],
@@ -73,7 +73,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     keywords: ['achievements', 'awards', 'milestone', 'journey', 'crypt-era'],
     response:
-      "Muhil's key achievements:\n\n- Top 25/3700+ Teams at Quest Global Ingenium 2026\n- Shortlisted in SIH 2026 Internal Hackathon — SIH26178 — Hardware — Qualcomm Inc.\n- 7 Industry Certifications (GUVI, HCL, Cisco, NASSCOM Gold, NPTEL, Infosys, AWS)\n- Research paper presented at CRYPTERA 2026 (CIT)\n- 100+ LeetCode Problems Solved\n- 16+ Public GitHub Repositories\n- IEEE Student Branch Technical Presenter & Coordinator",
+      "Muhil's key achievements:\n\n- Top 25/3700+ Teams at Quest Global Ingenium 2026\n- Shortlisted in SIH 2026 Internal Hackathon — SIH26178 — Hardware — Qualcomm Inc.\n- 8 Industry Certifications (Pegasystems, GUVI, HCL, Cisco, NASSCOM Gold, NPTEL, Infosys, AWS)\n- Research paper presented at CRYPTERA 2026 (CIT)\n- 100+ LeetCode Problems Solved\n- 16+ Public GitHub Repositories\n- IEEE Student Branch Technical Presenter & Coordinator",
   },
   {
     keywords: ['contact', 'email', 'reach', 'phone', 'linkedin', 'github'],

@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Float, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { certifications } from '../data/certifications';
-import { ExternalLink, Award, Hash, ShieldCheck } from 'lucide-react';
+import { certifications, type Certification } from '../data/certifications';
+import { ExternalLink, Award, Hash, ShieldCheck, FileText, X } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
 
 /* WebGL Error Boundary to prevent 3D scene crashes from breaking the whole page */
@@ -71,6 +71,7 @@ function CredentialScene() {
     { pos: [1.5, 0.5, 2.0], img: '/cred-infosys-dl.png' },
     { pos: [0.0, 2.0, -2.0], img: '/cred-infosys-ai.png' },
     { pos: [-0.5, -0.5, -2.5], img: '/cred-aws.jpg' },
+    { pos: [0.0, -1.2, 2.2], img: '/cert-pega.png' },
   ];
 
   return (
@@ -97,6 +98,7 @@ const categoryColors: Record<string, string> = {
   'IoT': '#D0FF71',
   'Electronics': '#FFCD00',
   'Programming': '#8B5CF6',
+  'Workflow Automation': '#00C0F3',
 };
 
 /* Certificate Thumbnail with image fallback */
@@ -127,7 +129,7 @@ function CertThumbnail({ src, alt }: { src: string; alt: string }) {
 
 export default function Certifications() {
   const { ref: sectionRef, inView } = useInView(0.02);
-  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [activeCert, setActiveCert] = useState<Certification | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -215,7 +217,7 @@ export default function Certifications() {
                 {/* View Certificate button (touch-friendly min 44px) */}
                 <div className="mt-auto pt-2 border-t border-[rgba(255,255,255,0.06)]">
                   <button
-                    onClick={() => setActiveModal(cert.image)}
+                    onClick={() => setActiveCert(cert)}
                     className="w-full flex items-center justify-center gap-1.5 text-[#2252FF] text-[12px] font-['Geist_Mono'] hover:text-white transition-colors py-2.5 min-h-[44px] hover:bg-[rgba(34,82,255,0.1)] active:scale-95 rounded-lg"
                     aria-label={`View ${cert.name} certificate`}
                   >
@@ -289,27 +291,67 @@ export default function Certifications() {
       </div>
 
       {/* Certificate Modal Lightbox */}
-      {activeModal && (
+      {activeCert && (
         <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 backdrop-blur-md"
-          onClick={() => setActiveModal(null)}
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-3 sm:p-6 backdrop-blur-md"
+          onClick={() => setActiveCert(null)}
           role="dialog"
           aria-modal="true"
           aria-label="Certificate viewer"
         >
-          <div className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setActiveModal(null)}
-              className="self-end mb-2 text-white/70 hover:text-white font-['Geist_Mono'] text-sm px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all min-h-[44px]"
-              aria-label="Close certificate viewer"
-            >
-              ✕ Close
-            </button>
-            <img
-              src={activeModal}
-              alt="Certificate"
-              className="w-full h-auto max-h-[80vh] object-contain rounded-xl border border-white/10 shadow-2xl"
-            />
+          <div
+            className="relative max-w-4xl w-full max-h-[92vh] flex flex-col bg-[#070b14] border border-[rgba(255,255,255,0.12)] rounded-2xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-[rgba(255,255,255,0.08)] bg-[#04060a]">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
+                <ShieldCheck size={18} className="text-[#2252FF] shrink-0" />
+                <div className="min-w-0">
+                  <h4 className="text-white font-['Geist'] font-semibold text-xs sm:text-sm truncate">
+                    {activeCert.name}
+                  </h4>
+                  <p className="text-[rgba(255,255,255,0.45)] text-[11px] font-['Geist_Mono'] truncate">
+                    {activeCert.issuer} • {activeCert.year}
+                  </p>
+                </div>
+                {activeCert.credentialId && (
+                  <span className="hidden md:inline-block px-2.5 py-0.5 rounded-full bg-[rgba(34,82,255,0.15)] text-[#2252FF] border border-[rgba(34,82,255,0.3)] text-[11px] font-['Geist_Mono']">
+                    ID: {activeCert.credentialId}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {activeCert.pdf && (
+                  <a
+                    href={activeCert.pdf}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2252FF] text-white hover:bg-[#1a40d6] text-xs font-['Geist'] font-medium transition-colors shadow-[0_0_15px_rgba(34,82,255,0.4)] min-h-[36px]"
+                    aria-label="Open certificate PDF in new tab"
+                  >
+                    <FileText size={13} />
+                    <span>Open PDF</span>
+                  </a>
+                )}
+                <button
+                  onClick={() => setActiveCert(null)}
+                  className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-white/60 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                  aria-label="Close certificate viewer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body / Image */}
+            <div className="p-3 sm:p-4 overflow-auto flex items-center justify-center bg-[#030305]/80 max-h-[calc(92vh-64px)]">
+              <img
+                src={activeCert.image}
+                alt={`${activeCert.name} certificate`}
+                className="w-full h-auto max-h-[78vh] object-contain rounded-lg shadow-lg border border-[rgba(255,255,255,0.05)]"
+              />
+            </div>
           </div>
         </div>
       )}

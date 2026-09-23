@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GraduationCap, MapPin, Languages, Target, Award, BookOpen, Code2, Trophy } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
+import { CERTIFICATION_COUNT } from '../data/certifications';
 
 function AnimatedCounter({ end, duration = 2000, suffix = '' }: { end: number; duration?: number; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -170,7 +171,7 @@ export default function About() {
           {[
             { icon: Code2, value: 12, suffix: '+', label: 'Projects Built' },
             { icon: Award, value: 100, suffix: '+', label: 'LeetCode Problems' },
-            { icon: BookOpen, value: 7, suffix: '', label: 'Certifications' },
+            { icon: BookOpen, value: CERTIFICATION_COUNT, suffix: '', label: 'Certifications' },
             { icon: Trophy, value: 25, suffix: '', label: 'Quest Global Rank', prefix: 'Top ' },
           ].map((stat) => (
             <div key={stat.label} className="glass-card p-4 sm:p-6 text-center group hover:border-[rgba(34,82,255,0.3)] transition-all duration-300">

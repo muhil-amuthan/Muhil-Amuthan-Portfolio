@@ -75,6 +75,15 @@ export const timelineEvents: TimelineEvent[] = [
 
   {
     year: '2026',
+    icon: 'Briefcase',
+    title: 'National Internship Program — Pegasystems',
+    description:
+      'Completed 60 hours of industry-integrated learning in workflow automation, low-code technologies, and real-world project implementation sponsored by Pegasystems Worldwide India Private Limited in collaboration with SmartBridge.',
+    highlight: true,
+  },
+
+  {
+    year: '2026',
     icon: 'Cpu',
     title: 'AI / ML Training — Techzy IT Solutions',
     description:

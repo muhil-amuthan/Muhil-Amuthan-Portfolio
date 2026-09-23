@@ -1,4 +1,4 @@
-export const CERTIFICATION_COUNT = 7;
+export const CERTIFICATION_COUNT = 8;
 
 export interface Certification {
   id: number;
@@ -6,11 +6,22 @@ export interface Certification {
   issuer: string;
   year: string;
   image: string;
+  pdf?: string;
   category: string;
   credentialId?: string;
 }
 
 export const certifications: Certification[] = [
+  {
+    id: 8,
+    name: "National Internship Program",
+    issuer: "Pegasystems & SmartBridge",
+    year: "September 2026",
+    image: "/cert-pega.png",
+    pdf: "/Pega.pdf",
+    category: "Workflow Automation",
+    credentialId: "PEGA-SW-NIP-2026-1000"
+  },
   {
     id: 1,
     name: "Applied AI: Statistics to NLP",

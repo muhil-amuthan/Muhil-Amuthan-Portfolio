@@ -8,6 +8,8 @@ export interface ExperienceEntry {
   project?: string;
   projectUrl?: string;
   certificate?: string;
+  pdf?: string;
+  credentialId?: string;
   tags: string[];
 }
 
@@ -20,6 +22,18 @@ export const experiences: ExperienceEntry[] = [
     status: "ongoing",
     description: "Currently pursuing a Full Stack Web Development Internship at Elevence Skills, developing web applications and gaining hands-on industry experience in frontend and backend workflows.",
     tags: ["Full Stack", "React", "Web Development", "Ongoing"]
+  },
+  {
+    id: 4,
+    role: "National Internship Program — Industry-Integrated Learning",
+    company: "Pegasystems Worldwide India Private Limited (in collaboration with SmartBridge)",
+    period: "4 August 2026 – 3 September 2026 (60 Hours)",
+    status: "completed",
+    description: "Successfully completed the National Internship Program sponsored by Pegasystems Worldwide India Private Limited in collaboration with SmartBridge, involving 60 hours of industry-integrated learning with hands-on exposure to workflow automation, low-code technologies, and real-world project implementation.",
+    certificate: "/cert-pega.png",
+    pdf: "/Pega.pdf",
+    credentialId: "PEGA-SW-NIP-2026-1000",
+    tags: ["Workflow Automation", "Low-Code", "Pegasystems", "SmartBridge", "Internship"]
   },
   {
     id: 2,
