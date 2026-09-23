@@ -25,12 +25,22 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     keywords: ['carbonwise', 'carbon', 'quest global', 'ingenium', 'award', 'top 25'],
     response:
-      'CarbonWise is Muhil\'s flagship project — a real-time grid carbon intelligence system that placed Top 25 out of 3,700+ teams at Quest Global Ingenium 2026! It computes Carbon Intensity across 15-minute intervals using ML, with a FastAPI backend, React dashboard, cloud DB, and AI energy report generator. Live Demo: https://carbon-wise-ma0728.streamlit.app/',
+      'CarbonWise is an Industrial Carbon Intelligence & Reduction Platform that placed Top 25 out of 3,700+ teams at Quest Global Ingenium 2026! It computes Carbon Intensity across 15-minute intervals using ML, with a FastAPI backend, React dashboard, cloud DB, and AI energy report generator. Live Demo: https://carbon-wise-ma0728.streamlit.app/',
   },
   {
-    keywords: ['ppe', 'safety', 'interlock', 'esp-now', 'hardware', 'embedded'],
+    keywords: ['netsentry', 'netsentry-ai', 'network', 'incident', 'triage', 'alert'],
     response:
-      'The Smart PPE Compliance Monitoring system is a fail-safe industrial safety project. It monitors PPE compliance, authenticates workers via RFID, communicates between ESP32 nodes using ESP-NOW, and controls machine access through a safety interlock mechanism with heartbeat monitoring and tamper detection.',
+      'NetSentry-AI is an AI-powered Network Incident Triage Assistant that normalizes noisy network alerts, correlates incidents across topology and time, retrieves relevant runbooks, provides evidence-backed recommendations, and escalates unknown incidents to human engineers. Tech stack: Python, FastAPI, React, REST APIs.',
+  },
+  {
+    keywords: ['ppe', 'ppe compliance', 'safety', 'interlock', 'esp-now', 'hardware', 'embedded'],
+    response:
+      'Smart PPE Compliance Monitoring is a fail-safe industrial safety and hardware interlock project. It monitors PPE compliance, authenticates workers via RFID, communicates between ESP32 nodes using ESP-NOW, and controls machine access through a safety interlock mechanism with heartbeat monitoring and tamper detection.',
+  },
+  {
+    keywords: ['ecogrid', 'ecogrid sentinel', 'environmental', 'sensors', 'dht11', 'mq135'],
+    response:
+      'EcoGrid Sentinel is an ESP32-based environmental monitoring prototype integrating multiple sensors (DHT11, MQ-135, Ultrasonic, Rain, Turbidity), OLED/LCD display, SD card data logging, relay-based automation, and IoT connectivity.',
   },
   {
     keywords: ['sih', 'hackathon', 'qualcomm', 'smart india'],
@@ -45,7 +55,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     keywords: ['experience', 'internship', 'intern', 'elevence', 'techzy', 'bsnl', 'pega', 'pegasystems', 'smartbridge', 'training'],
     response:
-      'Muhil\'s experience includes:\n\n1. Full Stack Web Development Intern — Elevence Skills (2026 – Present, Ongoing)\n2. National Internship Program — Pegasystems Worldwide India & SmartBridge (August – September 2026, 60 Hours, Completed)\n   Focus Areas: Workflow automation, low-code technologies, and real-world project implementation\n   Certificate ID: PEGA-SW-NIP-2026-1000\n3. AI/ML Training — Techzy IT Solutions (June 2026, 1 month)\n   Project: Food Delivery Time Prediction (Demo: https://food-delivery-time-prediction-0728.streamlit.app/)\n4. In-Plant Training — BSNL Madurai SSA (June 2025, 1 Week)\n\nHe is also Technical Presenter & Student Coordinator at IEEE.',
+      'Muhil\'s experience includes:\n\n1. Full Stack Web Development Intern — Elevence Skills (2026 – Present, Ongoing)\n2. National Internship Program — Pegasystems Worldwide India & SmartBridge (August – September 2026, 60 Hours, Completed)\n   Focus Areas: Workflow automation, low-code technologies, and real-world project implementation\n   Certificate ID: PEGA-SW-NIP-2026-1000\n3. AI/ML Training — Techzy IT Solutions (June 2026, 1 month)\n   Project: Food Delivery Time Prediction (Demo: https://food-delivery-time-prediction-0728.streamlit.app/)\n4. In-Plant Training — BSNL Madurai SSA (June 2025, 1 Week).',
   },
   {
     keywords: ['available', 'hire', 'job', 'opportunity', 'work with', 'collaboration'],
@@ -73,7 +83,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     keywords: ['achievements', 'awards', 'milestone', 'journey', 'crypt-era'],
     response:
-      "Muhil's key achievements:\n\n- Top 25/3700+ Teams at Quest Global Ingenium 2026\n- Shortlisted in SIH 2026 Internal Hackathon — SIH26178 — Hardware — Qualcomm Inc.\n- 8 Industry Certifications (Pegasystems, GUVI, HCL, Cisco, NASSCOM Gold, NPTEL, Infosys, AWS)\n- Research paper presented at CRYPTERA 2026 (CIT)\n- 100+ LeetCode Problems Solved\n- 16+ Public GitHub Repositories\n- IEEE Student Branch Technical Presenter & Coordinator",
+      "Muhil's key achievements:\n\n- Top 25/3700+ Teams at Quest Global Ingenium 2026\n- Shortlisted in SIH 2026 Internal Hackathon — SIH26178 — Hardware — Qualcomm Inc.\n- 8 Industry Certifications (Pegasystems, GUVI, HCL, Cisco, NASSCOM Gold, NPTEL, Infosys, AWS)\n- Research paper presented at CRYPTERA 2026 (CIT)\n- 100+ LeetCode Problems Solved\n- 16+ Public GitHub Repositories",
   },
   {
     keywords: ['contact', 'email', 'reach', 'phone', 'linkedin', 'github'],

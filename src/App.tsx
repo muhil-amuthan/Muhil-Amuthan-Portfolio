@@ -9,14 +9,12 @@ import Highlights from './sections/Highlights';
 import About from './sections/About';
 import Skills from './sections/Skills';
 import Experience from './sections/Experience';
-import Timeline from './sections/Timeline';
 import Achievements from './sections/Achievements';
 import Projects from './sections/Projects';
-import ChatBot from './sections/ChatBot';
 import Certifications from './sections/Certifications';
-import CodingProfiles from './sections/CodingProfiles';
 import Contact from './sections/Contact';
 import Footer from './sections/Footer';
+import ChatBot from './sections/ChatBot';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 
@@ -27,13 +25,10 @@ function HomePage() {
       <Highlights />
       <About />
       <Skills />
-      <CodingProfiles />
       <Experience />
-      <Achievements />
       <Projects />
+      <Achievements />
       <Certifications />
-      <Timeline />
-      <ChatBot />
       <Contact />
       <Footer />
     </>
@@ -57,7 +52,7 @@ function ScrollToTop() {
   useEffect(() => {
     if (hash) {
       const id = hash.replace('#', '');
-      const el = document.getElementById(id) || (id === 'profiles' ? document.getElementById('coding-profiles') : null);
+      const el = document.getElementById(id);
       if (el) {
         setTimeout(() => {
           el.scrollIntoView({ behavior: 'smooth' });
@@ -89,6 +84,7 @@ export default function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </main>
+      {!isAdmin && <ChatBot />}
     </div>
   );
 }

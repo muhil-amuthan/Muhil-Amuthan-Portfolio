@@ -14,8 +14,8 @@ export interface Certification {
 export const certifications: Certification[] = [
   {
     id: 8,
-    name: "National Internship Program",
-    issuer: "Pegasystems & SmartBridge",
+    name: "Pega Internship Certificate",
+    issuer: "Pegasystems Worldwide India & SmartBridge",
     year: "September 2026",
     image: "/cert-pega.png",
     pdf: "/Pega.pdf",

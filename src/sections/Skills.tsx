@@ -1,143 +1,193 @@
-import { motion } from 'framer-motion';
-import { skillCategories } from '../data/skills';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Code, Layout, Server, Brain, Cpu, Wrench, CheckCircle2 } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
 
-function SkillBar({ name, level, color, delay }: { name: string; level: number; color: string; delay: number }) {
-  const { ref, inView } = useInView(0.05);
-
-  return (
-    <div ref={ref} className="mb-3">
-      <div className="flex justify-between items-center mb-1.5">
-        <span className="text-[rgba(255,255,255,0.8)] text-sm font-['Geist']">{name}</span>
-        <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono']">{level}%</span>
-      </div>
-      <div className="w-full h-1.5 bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={inView ? { width: `${level}%` } : {}}
-          transition={{ duration: 0.8, delay, ease: 'easeOut' }}
-          className="h-full rounded-full"
-          style={{ backgroundColor: color }}
-        />
-      </div>
-    </div>
-  );
+interface SkillGroup {
+  category: string;
+  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>;
+  accentColor: string;
+  badgeBg: string;
+  description: string;
+  skills: string[];
 }
 
-const orbitRows = [
-  { text: "PYTHON  +  JAVA  +  JAVASCRIPT  +  SQL  +  C  +  ", color: "#FFFFFF", top: "8%", z: 0, rotate: 0 },
-  { text: "REACT  +  HTML/CSS/JS  +  RESPONSIVE UI  +  ", color: "#D0FF71", top: "22%", z: -100, rotate: -20 },
-  { text: "FASTAPI  +  FLASK  +  REST APIS  +  JAVA OOP  +  ", color: "#06B6D4", top: "36%", z: -150, rotate: -40 },
-  { text: "SQL  +  CLOUD DB  +  DATA MODELING  +  ", color: "#8B5CF6", top: "50%", z: -150, rotate: -60 },
-  { text: "MACHINE LEARNING  +  DEEP LEARNING  +  CNN  +  FEDERATED LEARNING  +  GENAI  +  ", color: "#2252FF", top: "64%", z: -100, rotate: -80 },
-  { text: "GIT/GITHUB  +  VS CODE  +  DOCKER  +  LINUX  +  AWS  +  ", color: "#FFCD00", top: "78%", z: 0, rotate: -100 },
-  { text: "IOT  +  MICROCONTROLLERS  +  EMBEDDED SYSTEMS  +  COMPUTER NETWORKS  +  ", color: "#F97316", top: "92%", z: 0, rotate: -120 },
+const skillGroups: SkillGroup[] = [
+  {
+    category: 'Programming',
+    icon: Code,
+    accentColor: '#2252FF',
+    badgeBg: 'rgba(34,82,255,0.1)',
+    description: 'Core languages for algorithm development, systems programming, and backend logic.',
+    skills: ['Python', 'Java', 'C', 'SQL', 'Embedded C'],
+  },
+  {
+    category: 'Frontend',
+    icon: Layout,
+    accentColor: '#D0FF71',
+    badgeBg: 'rgba(208,255,113,0.1)',
+    description: 'Modern, responsive user interfaces built with modular component systems.',
+    skills: ['React', 'JavaScript', 'HTML', 'CSS', 'TypeScript', 'Responsive UI'],
+  },
+  {
+    category: 'Backend',
+    icon: Server,
+    accentColor: '#00C0F3',
+    badgeBg: 'rgba(0,192,243,0.1)',
+    description: 'High-performance RESTful APIs, microservices, and database persistence.',
+    skills: ['FastAPI', 'Flask', 'Spring Boot', 'REST APIs', 'Firebase', 'PostgreSQL'],
+  },
+  {
+    category: 'Data / ML',
+    icon: Brain,
+    accentColor: '#FFCD00',
+    badgeBg: 'rgba(255,205,0,0.1)',
+    description: 'Predictive modeling, deep learning architectures, and data engineering pipelines.',
+    skills: [
+      'Machine Learning',
+      'Scikit-learn',
+      'NumPy',
+      'Pandas',
+      'Matplotlib',
+      'Deep Learning',
+      'CNN',
+      'Federated Learning',
+      'GenAI',
+    ],
+  },
+  {
+    category: 'IoT / Embedded',
+    icon: Cpu,
+    accentColor: '#F97316',
+    badgeBg: 'rgba(249,115,22,0.1)',
+    description: 'Microcontroller hardware architecture, wireless protocols, and sensor integration.',
+    skills: ['ESP32', 'Embedded Systems', 'MQTT', 'ESP-NOW', 'Sensors', 'RFID', 'Relay Interlocks'],
+  },
+  {
+    category: 'Tools',
+    icon: Wrench,
+    accentColor: '#8B5CF6',
+    badgeBg: 'rgba(139,92,246,0.1)',
+    description: 'Developer tooling, version control, API testing, and deployment platforms.',
+    skills: ['Git', 'GitHub', 'VS Code', 'Postman', 'Linux', 'Vercel', 'IntelliJ IDEA'],
+  },
 ];
 
 export default function Skills() {
-  const { ref: sectionRef, inView } = useInView(0.1);
+  const { ref: sectionRef, inView } = useInView(0.08);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const filteredGroups =
+    selectedCategory === 'All'
+      ? skillGroups
+      : skillGroups.filter((g) => g.category === selectedCategory);
 
   return (
-    <section id="skills" className="relative py-16 sm:py-24 lg:py-32 overflow-hidden" ref={sectionRef}>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="skills" className="relative py-16 sm:py-24 lg:py-28" ref={sectionRef}>
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
+          transition={{ duration: 0.5 }}
+          className="mb-10 sm:mb-12"
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-3">
             <span className="w-8 h-[2px] bg-[#2252FF]" />
             <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
               Technical Arsenal
             </span>
           </div>
-          <h2 className="text-3xl lg:text-[48px] font-bold text-white font-['Geist'] leading-[1.1] mb-4">
-            Skills & Technologies
+          <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-white font-['Geist'] leading-[1.1] mb-4">
+            Skills &amp; Technologies
           </h2>
-          <p className="text-[rgba(255,255,255,0.5)] text-base max-w-[560px]">
-            A comprehensive toolkit spanning AI/ML, full-stack development, IoT, and core computer science fundamentals.
+          <p className="text-[rgba(255,255,255,0.65)] text-base max-w-[620px] font-['Geist']">
+            Organized across programming, full-stack development, machine learning, IoT hardware, and engineering tools.
           </p>
         </motion.div>
 
-        {/* Holographic Skill Cloud */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative h-[220px] sm:h-[300px] md:h-[400px] mb-12 sm:mb-16 overflow-hidden rounded-2xl"
-          style={{
-            background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(2, 19, 33, 0.6), transparent)',
-          }}
-        >
-          <div
-            className="absolute inset-0"
-            style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
-          >
-            {orbitRows.map((row, i) => (
-              <div
-                key={i}
-                className="absolute left-[-50%] w-[200%] flex whitespace-nowrap overflow-hidden"
-                style={{
-                  top: row.top,
-                  transform: `translateZ(${row.z}px) rotateY(${row.rotate}deg)`,
-                }}
+        {/* Category Filter Pills */}
+        <div className="flex flex-wrap items-center gap-2 mb-10 overflow-x-auto pb-1 no-scrollbar">
+          {['All', ...skillGroups.map((g) => g.category)].map((cat) => {
+            const isSelected = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-['Geist'] font-medium transition-all ${
+                  isSelected
+                    ? 'bg-[#2252FF] text-white shadow-[0_0_15px_rgba(34,82,255,0.4)]'
+                    : 'glass-card text-[rgba(255,255,255,0.7)] hover:text-white hover:border-[rgba(255,255,255,0.2)]'
+                }`}
               >
-                <div
-                  className="flex animate-marquee"
-                  style={{ animationDuration: `${20 + i * 3}s`, animationDirection: i % 2 === 0 ? 'normal' : 'reverse' }}
-                >
-                  {[...Array(4)].map((_, j) => (
-                    <span
-                      key={j}
-                      className="inline-block text-sm font-['Geist_Mono'] px-4 py-2 mx-2 rounded-full border"
-                      style={{
-                        color: row.color,
-                        borderColor: `${row.color}40`,
-                        background: 'rgba(255,255,255,0.04)',
-                        letterSpacing: '0.05em',
-                      }}
-                    >
-                      {row.text}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Bento Grid Skills */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skillCategories.map((cat, i) => (
-            <motion.div
-              key={cat.category}
-              initial={{ opacity: 0, y: 40 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 + i * 0.1 }}
-              className="glass-card p-6 hover:shadow-[0_0_30px_rgba(34,82,255,0.1)] transition-all duration-300 group"
-              style={{ borderTop: `2px solid ${cat.color}40` }}
-            >
-              <div className="flex items-center gap-3 mb-5">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: cat.color, boxShadow: `0 0 10px ${cat.color}60` }}
-                />
-                <h3 className="text-white font-semibold font-['Geist']">{cat.category}</h3>
-              </div>
-              {cat.skills.map((skill, j) => (
-                <SkillBar
-                  key={skill.name}
-                  name={skill.name}
-                  level={skill.level}
-                  color={cat.color}
-                  delay={j * 0.1}
-                />
-              ))}
-            </motion.div>
-          ))}
+                {cat}
+              </button>
+            );
+          })}
         </div>
+
+        {/* Skill Category Cards Grid */}
+        <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AnimatePresence>
+            {filteredGroups.map((group) => {
+              const Icon = group.icon;
+              return (
+                <motion.div
+                  key={group.category}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  className="glass-card p-6 flex flex-col justify-between group hover:border-[rgba(34,82,255,0.35)] hover:shadow-[0_0_25px_rgba(34,82,255,0.1)] transition-all duration-300"
+                  style={{
+                    borderTop: `2px solid ${group.accentColor}50`,
+                  }}
+                >
+                  <div>
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-10 h-10 rounded-xl flex items-center justify-center"
+                          style={{
+                            background: group.badgeBg,
+                            border: `1px solid ${group.accentColor}30`,
+                          }}
+                        >
+                          <Icon size={20} style={{ color: group.accentColor }} />
+                        </div>
+                        <h3 className="text-white font-semibold font-['Geist'] text-lg">
+                          {group.category}
+                        </h3>
+                      </div>
+                      <span className="text-xs font-['Geist_Mono'] text-[rgba(255,255,255,0.4)]">
+                        {group.skills.length} skills
+                      </span>
+                    </div>
+
+                    <p className="text-[rgba(255,255,255,0.55)] text-xs font-['Geist'] leading-relaxed mb-6">
+                      {group.description}
+                    </p>
+
+                    {/* Skill Tags */}
+                    <div className="flex flex-wrap gap-2">
+                      {group.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)] text-white text-xs font-['Geist'] transition-colors"
+                        >
+                          <CheckCircle2 size={12} style={{ color: group.accentColor }} className="opacity-70" />
+                          <span>{skill}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   );

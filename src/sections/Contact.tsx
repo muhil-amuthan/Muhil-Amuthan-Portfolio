@@ -154,15 +154,15 @@ export default function Contact() {
           <div className="flex items-center justify-center gap-3 mb-4">
             <span className="w-8 h-[2px] bg-[#2252FF]" />
             <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
-              Let's Build Something
+              Opportunities &amp; Collaboration
             </span>
             <span className="w-8 h-[2px] bg-[#2252FF]" />
           </div>
           <h2 className="text-3xl lg:text-[48px] font-bold text-white font-['Geist'] leading-[1.1] mb-4">
-            Get in Touch
+            Let's Build Something Together
           </h2>
-          <p className="text-[rgba(255,255,255,0.5)] text-base max-w-[560px] mx-auto">
-            Open to internships, collaborations, and exciting projects. Let's create something impactful together.
+          <p className="text-[rgba(255,255,255,0.6)] text-base max-w-[580px] mx-auto">
+            I'm currently open to internship opportunities, technical projects, and collaborations.
           </p>
         </motion.div>
 

@@ -37,7 +37,7 @@ export const timelineEvents: TimelineEvent[] = [
     icon: 'Users',
     title: 'Joined IEEE Student Branch',
     description:
-      'Joined the IEEE Student Branch and became involved in technical activities, workshops, events, and student coordination.',
+      'Joined the IEEE Student Branch and became involved in technical activities, workshops, and events.',
   },
 
   {

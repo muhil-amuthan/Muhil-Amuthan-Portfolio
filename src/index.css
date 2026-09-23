@@ -39,8 +39,13 @@
   body {
     @apply bg-[#030305] text-white antialiased;
     font-family: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
-    cursor: none;
     overflow-x: hidden;
+  }
+
+  @media (pointer: fine) {
+    body, a, button, [role="button"], input[type="submit"] {
+      cursor: none;
+    }
   }
 
   html {

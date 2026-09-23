@@ -227,10 +227,10 @@ export default function AdminDashboard() {
           skills: parsed.skills || defaultSkills,
           stats: {
             projects: parsed.stats?.projects ?? defaultProjects.length,
-            leetcode: parsed.stats?.leetcode ?? 85,
+            leetcode: parsed.stats?.leetcode ?? 100,
             certifications:
               parsed.stats?.certifications ?? parsed.certs?.length ?? 0,
-            githubRepos: parsed.stats?.githubRepos ?? 11,
+            githubRepos: parsed.stats?.githubRepos ?? 16,
           },
         };
       } catch {
@@ -302,9 +302,9 @@ export default function AdminDashboard() {
 
       stats: {
         projects: defaultProjects.length,
-        leetcode: 85,
+        leetcode: 100,
         certifications: defaultCerts.length,
-        githubRepos: 11,
+        githubRepos: 16,
       },
     };
   });

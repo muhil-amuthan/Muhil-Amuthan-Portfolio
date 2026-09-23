@@ -20,7 +20,7 @@ const highlights = [
   },
   {
     icon: Code2,
-    text: '100+ LeetCode problems solved',
+    text: '100+ LeetCode Problems Solved',
     color: '#FFA116',
   },
   {

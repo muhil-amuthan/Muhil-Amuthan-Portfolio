@@ -25,6 +25,19 @@ export const achievements: Achievement[] = [
   },
   {
     id: 2,
+    title: "100+ LeetCode Problems Solved",
+    subtitle: "Data Structures & Algorithms in Java",
+    details: [
+      "Solved 100+ algorithmic challenges across Arrays, Trees, DP, and Graphs",
+      "Continuous competitive coding practice on LeetCode",
+    ],
+    badge: "100+ Solved",
+    badgeColor: "rgba(255,161,22,0.15)",
+    accentColor: "#FFA116",
+    icon: "Code2",
+  },
+  {
+    id: 3,
     title: "Smart India Hackathon 2026",
     subtitle: "Shortlisted — Internal Hackathon",
     details: [
@@ -36,5 +49,18 @@ export const achievements: Achievement[] = [
     badgeColor: "rgba(34,82,255,0.15)",
     accentColor: "#2252FF",
     icon: "Award",
+  },
+  {
+    id: 4,
+    title: "16+ Public GitHub Repositories",
+    subtitle: "Open-Source Engineering Projects",
+    details: [
+      "Projects across AI/ML, Full-Stack Development, IoT, and Java",
+      "All repositories publicly documented and active on GitHub",
+    ],
+    badge: "16+ Repos",
+    badgeColor: "rgba(208,255,113,0.15)",
+    accentColor: "#D0FF71",
+    icon: "Github",
   },
 ];

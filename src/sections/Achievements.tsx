@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
-import { Trophy, Award } from 'lucide-react';
+import { Trophy, Award, Code2, Github } from 'lucide-react';
 import { achievements } from '../data/achievements';
 import { useInView } from '../hooks/useInView';
 
 const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>> = {
   Trophy,
   Award,
+  Code2,
+  Github,
 };
 
 export default function Achievements() {

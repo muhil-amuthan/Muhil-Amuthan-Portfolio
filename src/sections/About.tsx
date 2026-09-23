@@ -1,190 +1,122 @@
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { GraduationCap, MapPin, Languages, Target, Award, BookOpen, Code2, Trophy } from 'lucide-react';
+import { GraduationCap, Target, Sparkles, BookOpen } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
-import { CERTIFICATION_COUNT } from '../data/certifications';
-
-function AnimatedCounter({ end, duration = 2000, suffix = '' }: { end: number; duration?: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const { ref, inView } = useInView(0.05);
-
-  useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const increment = end / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [inView, end, duration]);
-
-  return <span ref={ref}>{count}{suffix}</span>;
-}
 
 export default function About() {
   const { ref: sectionRef, inView } = useInView(0.1);
 
   return (
-    <section id="about" className="relative py-16 sm:py-24 lg:py-32" ref={sectionRef}>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="about" className="relative py-16 sm:py-24 lg:py-28" ref={sectionRef}>
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
+          transition={{ duration: 0.5 }}
+          className="mb-12 sm:mb-16"
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-3">
             <span className="w-8 h-[2px] bg-[#2252FF]" />
             <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
-              About Me
+              Profile &amp; Background
             </span>
           </div>
-          <h2 className="text-3xl lg:text-[48px] font-bold text-white font-['Geist'] leading-[1.1]">
-            The Mind Behind<br />The Code
+          <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-white font-['Geist'] leading-[1.1]">
+            About Me
           </h2>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Left — Bio Card */}
+        {/* Content Grid */}
+        <div className="grid lg:grid-cols-12 gap-8 items-start">
+          {/* Main Bio Card (7 Cols) */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.55, delay: 0.1 }}
+            className="lg:col-span-7 glass-card p-6 sm:p-8 space-y-6"
           >
-            <div className="glass-card p-5 sm:p-8">
-              <div className="flex items-center gap-4 mb-6">
-                <img
-                  src="/Profile_Picture_New.jpeg"
-                  alt="Muhil Amuthan M"
-                  className="w-16 h-16 rounded-full object-cover object-top border-2 border-[#2252FF]"
-                />
-                <div>
-                  <h3 className="text-xl font-bold text-white font-['Geist']">Muhil Amuthan M</h3>
-                  <p className="text-[rgba(255,255,255,0.5)] text-sm font-['Geist_Mono']">
-                    B.E. ECE | Minor: Computer Science
-                  </p>
-                </div>
-              </div>
+            <div className="space-y-4 text-[rgba(255,255,255,0.8)] text-base sm:text-lg font-['Geist'] leading-relaxed">
+              <p>
+                I am a third-year <span className="text-white font-medium">B.E. Electronics and Communication Engineering</span> student interested in <span className="text-white font-medium">Machine Learning</span>, <span className="text-white font-medium">Full-Stack Development</span>, <span className="text-white font-medium">Embedded Systems</span>, and <span className="text-white font-medium">IoT</span>.
+              </p>
+              <p className="text-[rgba(255,255,255,0.7)] text-base">
+                I enjoy building practical software and hardware solutions that combine intelligent systems with real-world applications. Whether training machine learning models for carbon reduction, architecting full-stack web applications, or designing fail-safe embedded hardware, I focus on building reliable, impactful engineering products.
+              </p>
+            </div>
 
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-3 text-[rgba(255,255,255,0.7)] text-sm">
-                  <GraduationCap size={16} className="text-[#2252FF]" />
-                  <span>V.S.B Engineering College, Karur</span>
-                </div>
-                <div className="flex items-center gap-3 text-[rgba(255,255,255,0.7)] text-sm">
-                  <Target size={16} className="text-[#FFCD00]" />
-                  <span>CGPA: 7.93 | Expected: 2028</span>
-                </div>
-                <div className="flex items-center gap-3 text-[rgba(255,255,255,0.7)] text-sm">
-                  <MapPin size={16} className="text-[#D0FF71]" />
-                  <span>Dindigul, Tamil Nadu, India</span>
-                </div>
-                <div className="flex items-center gap-3 text-[rgba(255,255,255,0.7)] text-sm">
-                  <Languages size={16} className="text-[#8B5CF6]" />
-                  <span>Tamil, English, German (A1)</span>
-                </div>
+            {/* Current Focus Area */}
+            <div className="pt-6 border-t border-[rgba(255,255,255,0.08)]">
+              <div className="flex items-center gap-2 mb-3 text-xs font-['Geist_Mono'] text-[rgba(255,255,255,0.5)] uppercase tracking-wider">
+                <Target size={14} className="text-[#FFCD00]" />
+                <span>Current Focus</span>
               </div>
-
-              <div className="border-t border-[rgba(255,255,255,0.08)] pt-6">
-                <p className="text-[rgba(255,255,255,0.7)] text-[15px] leading-[1.7] font-['Geist'] italic">
-                  "I'm a 3rd-year ECE student who builds practical projects across Machine Learning, Full-Stack Development, and Embedded Systems. From AI-powered carbon platforms to ESP32-based safety systems, I focus on solving real problems with both software and hardware."
-                </p>
+              <div className="flex flex-wrap gap-2.5">
+                {[
+                  'Machine Learning',
+                  'Full-Stack Development',
+                  'IoT & Embedded Systems',
+                  'Data Structures & Algorithms (Java)',
+                ].map((focus) => (
+                  <span
+                    key={focus}
+                    className="px-3.5 py-1.5 rounded-lg bg-[rgba(34,82,255,0.1)] border border-[rgba(34,82,255,0.25)] text-white text-xs sm:text-sm font-['Geist'] font-medium"
+                  >
+                    {focus}
+                  </span>
+                ))}
               </div>
             </div>
           </motion.div>
 
-          {/* Right — Details Grid */}
+          {/* Education & Academic Highlights (5 Cols) */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-6"
+            transition={{ duration: 0.55, delay: 0.2 }}
+            className="lg:col-span-5 space-y-4"
           >
-            {/* Education card */}
-            <div className="glass-card p-6 hover:border-[rgba(34,82,255,0.3)] transition-all duration-300 group">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-[rgba(34,82,255,0.15)] flex items-center justify-center group-hover:bg-[rgba(34,82,255,0.25)] transition-colors">
-                  <BookOpen size={18} className="text-[#2252FF]" />
-                </div>
-                <h4 className="text-white font-semibold font-['Geist']">Education</h4>
+            {/* Education Card */}
+            <div className="glass-card p-6 border-l-2 border-l-[#2252FF]">
+              <div className="flex items-center gap-3 mb-2">
+                <GraduationCap size={20} className="text-[#2252FF]" />
+                <h3 className="text-white font-semibold font-['Geist'] text-base">Education</h3>
               </div>
-              <p className="text-[rgba(255,255,255,0.6)] text-sm leading-relaxed">
-                B.E. Electronics & Communication Engineering with Minor in Computer Science. Coursework: DSA, OOP (Java), Computer Networks, Microcontrollers, ML.
+              <div className="space-y-1">
+                <div className="text-white font-medium text-sm font-['Geist']">
+                  B.E. Electronics and Communication Engineering
+                </div>
+                <div className="text-[rgba(255,255,255,0.6)] text-xs font-['Geist_Mono']">
+                  2024 – 2028 (3rd Year) • CGPA: 7.93
+                </div>
+                <div className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist'] pt-1">
+                  V.S.B. Engineering College, Karur, Tamil Nadu
+                </div>
+              </div>
+            </div>
+
+            {/* Coursework & Foundations */}
+            <div className="glass-card p-6 border-l-2 border-l-[#D0FF71]">
+              <div className="flex items-center gap-3 mb-2">
+                <BookOpen size={20} className="text-[#D0FF71]" />
+                <h3 className="text-white font-semibold font-['Geist'] text-base">Core Coursework</h3>
+              </div>
+              <p className="text-[rgba(255,255,255,0.65)] text-xs sm:text-sm font-['Geist'] leading-relaxed">
+                Data Structures &amp; Algorithms, Object-Oriented Programming (Java), Computer Networks, Microcontrollers &amp; Embedded Systems, Analog Circuits, Machine Learning.
               </p>
             </div>
 
-            {/* Career Goal card */}
-            <div className="glass-card p-6 hover:border-[rgba(255,205,0,0.3)] transition-all duration-300 group">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-[rgba(255,205,0,0.15)] flex items-center justify-center group-hover:bg-[rgba(255,205,0,0.25)] transition-colors">
-                  <Target size={18} className="text-[#FFCD00]" />
-                </div>
-                <h4 className="text-white font-semibold font-['Geist']">Career Goal</h4>
+            {/* Engineering Values */}
+            <div className="glass-card p-6 border-l-2 border-l-[#FFCD00]">
+              <div className="flex items-center gap-3 mb-2">
+                <Sparkles size={20} className="text-[#FFCD00]" />
+                <h3 className="text-white font-semibold font-['Geist'] text-base">Engineering Approach</h3>
               </div>
-              <p className="text-[rgba(255,255,255,0.6)] text-sm leading-relaxed">
-                Land a top-tier Software/ML engineering role where I can build at scale. Passionate about AI systems that create real-world impact through federated learning, IoT, and full-stack development.
-              </p>
-            </div>
-
-            {/* Experience card */}
-            <div className="glass-card p-6 hover:border-[rgba(208,255,113,0.3)] transition-all duration-300 group">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-[rgba(208,255,113,0.15)] flex items-center justify-center group-hover:bg-[rgba(208,255,113,0.25)] transition-colors">
-                  <Code2 size={18} className="text-[#D0FF71]" />
-                </div>
-                <h4 className="text-white font-semibold font-['Geist']">Experience</h4>
-              </div>
-              <p className="text-[rgba(255,255,255,0.6)] text-sm leading-relaxed">
-                Technical Presenter & Student Coordinator — IEEE. Presented ML research at CRYPTERA 2026 (CIT) to 100+ engineers. Conducted Java & IoT workshops for 50+ students.
-              </p>
-            </div>
-
-            {/* Achievement card */}
-            <div className="glass-card p-6 hover:border-[rgba(139,92,246,0.3)] transition-all duration-300 group">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-[rgba(139,92,246,0.15)] flex items-center justify-center group-hover:bg-[rgba(139,92,246,0.25)] transition-colors">
-                  <Trophy size={18} className="text-[#8B5CF6]" />
-                </div>
-                <h4 className="text-white font-semibold font-['Geist']">Top Achievement</h4>
-              </div>
-              <p className="text-[rgba(255,255,255,0.6)] text-sm leading-relaxed">
-                Top 25 out of 3,700+ teams at Quest Global Ingenium 2026 for CarbonWise — a real-time ML carbon intelligence platform.
+              <p className="text-[rgba(255,255,255,0.65)] text-xs sm:text-sm font-['Geist'] leading-relaxed">
+                Clean, maintainable code, test-driven validation, hardware-software integration, and continuous problem-solving practice (100+ LeetCode solved).
               </p>
             </div>
           </motion.div>
         </div>
-
-        {/* Animated Stats Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-10 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8"
-        >
-          {[
-            { icon: Code2, value: 12, suffix: '+', label: 'Projects Built' },
-            { icon: Award, value: 100, suffix: '+', label: 'LeetCode Problems' },
-            { icon: BookOpen, value: CERTIFICATION_COUNT, suffix: '', label: 'Certifications' },
-            { icon: Trophy, value: 25, suffix: '', label: 'Quest Global Rank', prefix: 'Top ' },
-          ].map((stat) => (
-            <div key={stat.label} className="glass-card p-4 sm:p-6 text-center group hover:border-[rgba(34,82,255,0.3)] transition-all duration-300">
-              <stat.icon size={24} className="mx-auto mb-3 text-[#2252FF] group-hover:scale-110 transition-transform" />
-              <div className="text-2xl sm:text-3xl font-extrabold text-white font-['Geist'] mb-1">
-                {stat.prefix || ''}<AnimatedCounter end={stat.value} suffix={stat.suffix} />
-              </div>
-              <div className="text-xs text-[rgba(255,255,255,0.4)] font-['Geist_Mono'] uppercase tracking-[1px]">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </motion.div>
       </div>
     </section>
   );

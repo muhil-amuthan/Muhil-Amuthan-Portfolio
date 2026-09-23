@@ -1,10 +1,10 @@
 import { useRef, useState, useEffect, Suspense, Component, type ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Float, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { certifications, type Certification } from '../data/certifications';
-import { ExternalLink, Award, Hash, ShieldCheck, FileText, X } from 'lucide-react';
+import { Award, Hash, ShieldCheck, FileText, X, Download, Eye, ZoomIn, ZoomOut } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
 
 /* WebGL Error Boundary to prevent 3D scene crashes from breaking the whole page */
@@ -102,7 +102,7 @@ const categoryColors: Record<string, string> = {
 };
 
 /* Certificate Thumbnail with image fallback */
-function CertThumbnail({ src, alt }: { src: string; alt: string }) {
+function CertThumbnail({ src, alt, onPreview }: { src: string; alt: string; onPreview?: () => void }) {
   const [error, setError] = useState(false);
 
   if (error || !src) {
@@ -117,19 +117,30 @@ function CertThumbnail({ src, alt }: { src: string; alt: string }) {
   }
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-      loading="lazy"
-      onError={() => setError(true)}
-    />
+    <div
+      onClick={onPreview}
+      className="relative w-full h-full cursor-pointer group/thumb overflow-hidden"
+      title="Click to view certificate"
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-500"
+        loading="lazy"
+        onError={() => setError(true)}
+      />
+      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center gap-1.5 text-white text-xs font-['Geist_Mono']">
+        <Eye size={15} />
+        <span>Preview</span>
+      </div>
+    </div>
   );
 }
 
 export default function Certifications() {
   const { ref: sectionRef, inView } = useInView(0.02);
   const [activeCert, setActiveCert] = useState<Certification | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -139,6 +150,20 @@ export default function Certifications() {
     checkDesktop();
     window.addEventListener('resize', checkDesktop, { passive: true });
     return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  // Reset zoom level when modal opens/closes
+  useEffect(() => {
+    setZoomLevel(1);
+  }, [activeCert]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveCert(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   return (
@@ -154,83 +179,129 @@ export default function Certifications() {
           <div className="flex items-center gap-3 mb-4">
             <span className="w-8 h-[2px] bg-[#2252FF]" />
             <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
-              Certifications Earned
+              Verified Credentials
             </span>
           </div>
           <h2 className="text-3xl lg:text-[48px] font-bold text-white font-['Geist'] leading-[1.1] mb-4">
             Credentials &amp; Certifications
           </h2>
-          <p className="text-[rgba(255,255,255,0.5)] text-base max-w-[560px]">
-            Industry-recognized credentials in AI, IoT, and Software Development from leading global organizations.
+          <p className="text-[rgba(255,255,255,0.6)] text-base max-w-[600px]">
+            Officially verified industry credentials and internship certifications in Software, Machine Learning, IoT, and Cloud.
           </p>
         </motion.div>
 
-        {/* Certification Cards Grid — Mobile & Desktop Friendly */}
+        {/* Certification Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-16 sm:mb-20">
-          {certifications.map((cert, i) => (
-            <motion.div
-              key={cert.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.3) }}
-              className="glass-card p-4 group hover:border-[rgba(34,82,255,0.4)] hover:shadow-[0_0_20px_rgba(34,82,255,0.15)] transition-all duration-300 flex flex-col"
-            >
-              {/* Thumbnail */}
-              <div className="relative rounded-lg overflow-hidden mb-4 bg-white/5" style={{ aspectRatio: '4/3' }}>
-                <CertThumbnail src={cert.image} alt={`${cert.name} certificate`} />
-                {/* Category badge */}
-                <span
-                  className="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-['Geist_Mono'] font-bold"
-                  style={{
-                    background: `${categoryColors[cert.category] || '#2252FF'}22`,
-                    color: categoryColors[cert.category] || '#2252FF',
-                    border: `1px solid ${categoryColors[cert.category] || '#2252FF'}44`,
-                  }}
-                >
-                  {cert.category}
-                </span>
-              </div>
+          {certifications.map((cert, i) => {
+            const isPega = cert.id === 8;
 
-              {/* Details */}
-              <div className="flex-1 flex flex-col">
-                <h3 className="text-white text-sm font-semibold font-['Geist'] leading-snug mb-1 line-clamp-2">
-                  {cert.name}
-                </h3>
-                <div className="flex items-center gap-1.5 mb-1">
-                  <Award size={12} className="text-[#2252FF] shrink-0" />
-                  <p className="text-[rgba(255,255,255,0.55)] text-[11px] font-['Geist_Mono'] line-clamp-1">
-                    {cert.issuer}
-                  </p>
+            return (
+              <motion.div
+                key={cert.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.3) }}
+                className={`glass-card p-4 group flex flex-col transition-all duration-300 ${
+                  isPega
+                    ? 'border-[#2252FF]/40 shadow-[0_0_25px_rgba(34,82,255,0.18)] hover:border-[#2252FF]'
+                    : 'border-white/[0.08] hover:border-[rgba(34,82,255,0.4)] hover:shadow-[0_0_20px_rgba(34,82,255,0.1)]'
+                }`}
+              >
+                {/* Thumbnail */}
+                <div
+                  className="relative rounded-lg overflow-hidden mb-4 bg-white/5 border border-white/[0.06]"
+                  style={{ aspectRatio: '16/11' }}
+                >
+                  <CertThumbnail
+                    src={cert.image}
+                    alt={`${cert.name} preview`}
+                    onPreview={() => setActiveCert(cert)}
+                  />
+
+                  {/* Category badge */}
+                  <span
+                    className="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-['Geist_Mono'] font-bold backdrop-blur-md"
+                    style={{
+                      background: `${categoryColors[cert.category] || '#2252FF'}25`,
+                      color: categoryColors[cert.category] || '#2252FF',
+                      border: `1px solid ${categoryColors[cert.category] || '#2252FF'}50`,
+                    }}
+                  >
+                    {cert.category}
+                  </span>
+
+                  {isPega && (
+                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-['Geist_Mono'] font-bold bg-[#2252FF] text-white shadow-md">
+                      PRIORITY
+                    </span>
+                  )}
                 </div>
-                <p className="text-[rgba(255,255,255,0.35)] text-[11px] font-['Geist_Mono'] mb-2">
-                  {cert.year}
-                </p>
-                {cert.credentialId && (
-                  <div className="flex items-center gap-1 mb-3">
-                    <Hash size={10} className="text-[rgba(255,255,255,0.3)] shrink-0" />
-                    <p className="text-[rgba(255,255,255,0.3)] text-[10px] font-['Geist_Mono'] truncate">
-                      {cert.credentialId}
+
+                {/* Details */}
+                <div className="flex-1 flex flex-col">
+                  <h3 className="text-white text-sm font-semibold font-['Geist'] leading-snug mb-1 line-clamp-2">
+                    {cert.name}
+                  </h3>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Award size={12} className="text-[#2252FF] shrink-0" />
+                    <p className="text-[rgba(255,255,255,0.65)] text-[11px] font-['Geist_Mono'] line-clamp-1">
+                      {cert.issuer}
                     </p>
                   </div>
-                )}
+                  <p className="text-[rgba(255,255,255,0.4)] text-[11px] font-['Geist_Mono'] mb-2">
+                    {cert.year}
+                  </p>
+                  {cert.credentialId && (
+                    <div className="flex items-center gap-1 mb-3">
+                      <Hash size={10} className="text-[rgba(255,255,255,0.3)] shrink-0" />
+                      <p className="text-[rgba(255,255,255,0.4)] text-[10px] font-['Geist_Mono'] truncate">
+                        {cert.credentialId}
+                      </p>
+                    </div>
+                  )}
 
-                {/* View Certificate button (touch-friendly min 44px) */}
-                <div className="mt-auto pt-2 border-t border-[rgba(255,255,255,0.06)]">
-                  <button
-                    onClick={() => setActiveCert(cert)}
-                    className="w-full flex items-center justify-center gap-1.5 text-[#2252FF] text-[12px] font-['Geist_Mono'] hover:text-white transition-colors py-2.5 min-h-[44px] hover:bg-[rgba(34,82,255,0.1)] active:scale-95 rounded-lg"
-                    aria-label={`View ${cert.name} certificate`}
-                  >
-                    <ExternalLink size={13} />
-                    View Certificate
-                  </button>
+                  {/* Card Action Buttons */}
+                  <div className="mt-auto pt-3 border-t border-[rgba(255,255,255,0.06)] flex flex-col gap-2">
+                    <button
+                      onClick={() => setActiveCert(cert)}
+                      className="w-full flex items-center justify-center gap-1.5 text-white bg-[#2252FF]/90 hover:bg-[#2252FF] text-[12px] font-['Geist'] py-2 rounded-lg transition-all active:scale-95 shadow-[0_0_12px_rgba(34,82,255,0.3)] min-h-[38px]"
+                      aria-label={`View ${cert.name} certificate image in modal`}
+                    >
+                      <Eye size={13} />
+                      <span>View Certificate</span>
+                    </button>
+
+                    {cert.pdf && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <a
+                          href={cert.pdf}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-1 text-[11px] font-['Geist_Mono'] text-white/80 hover:text-white bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 rounded-md py-1.5 transition-colors"
+                          aria-label={`Open ${cert.name} original PDF`}
+                        >
+                          <FileText size={11} className="text-[#D0FF71]" />
+                          <span>Open PDF</span>
+                        </a>
+                        <a
+                          href={cert.pdf}
+                          download
+                          className="flex items-center justify-center gap-1 text-[11px] font-['Geist_Mono'] text-white/80 hover:text-white bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 rounded-md py-1.5 transition-colors"
+                          aria-label={`Download ${cert.name} PDF`}
+                        >
+                          <Download size={11} className="text-[#FFCD00]" />
+                          <span>Download</span>
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* 3D Credential Vault (Rendered with WebGLErrorBoundary) */}
+        {/* 3D Credential Vault (Desktop Only) */}
         <div className="hidden lg:block">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -282,7 +353,7 @@ export default function Certifications() {
                   Interactive 3D Credential Vault — Drag to rotate
                 </p>
                 <p className="text-[rgba(255,255,255,0.25)] text-xs font-['Geist_Mono']">
-                  {certifications.length} Credentials
+                  {certifications.length} Verified Credentials
                 </p>
               </div>
             </div>
@@ -290,71 +361,120 @@ export default function Certifications() {
         </div>
       </div>
 
-      {/* Certificate Modal Lightbox */}
-      {activeCert && (
-        <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-3 sm:p-6 backdrop-blur-md"
-          onClick={() => setActiveCert(null)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Certificate viewer"
-        >
-          <div
-            className="relative max-w-4xl w-full max-h-[92vh] flex flex-col bg-[#070b14] border border-[rgba(255,255,255,0.12)] rounded-2xl overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
+      {/* Professional Certificate Modal Lightbox */}
+      <AnimatePresence>
+        {activeCert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-3 sm:p-6 backdrop-blur-md"
+            onClick={() => setActiveCert(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${activeCert.name} viewer`}
           >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-[rgba(255,255,255,0.08)] bg-[#04060a]">
-              <div className="flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
-                <ShieldCheck size={18} className="text-[#2252FF] shrink-0" />
-                <div className="min-w-0">
-                  <h4 className="text-white font-['Geist'] font-semibold text-xs sm:text-sm truncate">
-                    {activeCert.name}
-                  </h4>
-                  <p className="text-[rgba(255,255,255,0.45)] text-[11px] font-['Geist_Mono'] truncate">
-                    {activeCert.issuer} • {activeCert.year}
-                  </p>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative max-w-4xl w-full max-h-[92vh] flex flex-col bg-[#070b14] border border-[rgba(255,255,255,0.15)] rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-[rgba(255,255,255,0.08)] bg-[#04060a]">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
+                  <ShieldCheck size={18} className="text-[#2252FF] shrink-0" />
+                  <div className="min-w-0">
+                    <h4 className="text-white font-['Geist'] font-semibold text-xs sm:text-sm truncate">
+                      {activeCert.name}
+                    </h4>
+                    <p className="text-[rgba(255,255,255,0.5)] text-[11px] font-['Geist_Mono'] truncate">
+                      {activeCert.issuer} • {activeCert.year}
+                    </p>
+                  </div>
+                  {activeCert.credentialId && (
+                    <span className="hidden md:inline-block px-2.5 py-0.5 rounded-full bg-[rgba(34,82,255,0.15)] text-[#2252FF] border border-[rgba(34,82,255,0.3)] text-[11px] font-['Geist_Mono']">
+                      ID: {activeCert.credentialId}
+                    </span>
+                  )}
                 </div>
-                {activeCert.credentialId && (
-                  <span className="hidden md:inline-block px-2.5 py-0.5 rounded-full bg-[rgba(34,82,255,0.15)] text-[#2252FF] border border-[rgba(34,82,255,0.3)] text-[11px] font-['Geist_Mono']">
-                    ID: {activeCert.credentialId}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {activeCert.pdf && (
-                  <a
-                    href={activeCert.pdf}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2252FF] text-white hover:bg-[#1a40d6] text-xs font-['Geist'] font-medium transition-colors shadow-[0_0_15px_rgba(34,82,255,0.4)] min-h-[36px]"
-                    aria-label="Open certificate PDF in new tab"
-                  >
-                    <FileText size={13} />
-                    <span>Open PDF</span>
-                  </a>
-                )}
-                <button
-                  onClick={() => setActiveCert(null)}
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-white/60 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
-                  aria-label="Close certificate viewer"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-            </div>
 
-            {/* Modal Body / Image */}
-            <div className="p-3 sm:p-4 overflow-auto flex items-center justify-center bg-[#030305]/80 max-h-[calc(92vh-64px)]">
-              <img
-                src={activeCert.image}
-                alt={`${activeCert.name} certificate`}
-                className="w-full h-auto max-h-[78vh] object-contain rounded-lg shadow-lg border border-[rgba(255,255,255,0.05)]"
-              />
-            </div>
-          </div>
-        </div>
-      )}
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* Zoom controls */}
+                  <div className="hidden sm:flex items-center gap-1 bg-white/5 rounded-lg p-0.5 border border-white/10 mr-1">
+                    <button
+                      onClick={() => setZoomLevel((z) => Math.max(0.75, z - 0.25))}
+                      className="p-1 rounded text-white/60 hover:text-white hover:bg-white/10"
+                      title="Zoom out"
+                      aria-label="Zoom out"
+                    >
+                      <ZoomOut size={14} />
+                    </button>
+                    <span className="text-[10px] font-['Geist_Mono'] px-1 text-white/50">
+                      {Math.round(zoomLevel * 100)}%
+                    </span>
+                    <button
+                      onClick={() => setZoomLevel((z) => Math.min(2.5, z + 0.25))}
+                      className="p-1 rounded text-white/60 hover:text-white hover:bg-white/10"
+                      title="Zoom in"
+                      aria-label="Zoom in"
+                    >
+                      <ZoomIn size={14} />
+                    </button>
+                  </div>
+
+                  {activeCert.pdf && (
+                    <>
+                      <a
+                        href={activeCert.pdf}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2252FF] text-white hover:bg-[#1a40d6] text-xs font-['Geist'] font-medium transition-colors shadow-[0_0_15px_rgba(34,82,255,0.4)] min-h-[34px]"
+                        aria-label="Open original PDF in new tab"
+                      >
+                        <FileText size={13} />
+                        <span>Open PDF</span>
+                      </a>
+                      <a
+                        href={activeCert.pdf}
+                        download
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 text-white hover:bg-white/20 text-xs font-['Geist'] font-medium transition-colors min-h-[34px]"
+                        aria-label="Download original PDF"
+                      >
+                        <Download size={13} />
+                        <span className="hidden sm:inline">Download</span>
+                      </a>
+                    </>
+                  )}
+                  <button
+                    onClick={() => setActiveCert(null)}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-white/60 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                    aria-label="Close certificate viewer"
+                  >
+                    <X size={17} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Body / Certificate Preview */}
+              <div className="p-3 sm:p-5 overflow-auto flex items-center justify-center bg-[#030305]/90 max-h-[calc(92vh-64px)]">
+                <div
+                  className="transition-transform duration-200 flex items-center justify-center max-w-full"
+                  style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}
+                >
+                  <img
+                    src={activeCert.image}
+                    alt={`${activeCert.name} full certificate preview`}
+                    className="w-full h-auto max-h-[76vh] object-contain rounded-lg shadow-2xl border border-[rgba(255,255,255,0.08)]"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

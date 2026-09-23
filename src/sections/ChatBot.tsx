@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, Bot, User, Sparkles, X } from 'lucide-react';
 import { knowledgeBase, defaultResponse, suggestedQuestions } from '../data/chatbot-knowledge';
-import { useInView } from '../hooks/useInView';
 
 interface Message {
   id: number;
@@ -24,36 +23,41 @@ function getBotResponse(input: string): string {
 }
 
 export default function ChatBot() {
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Hi! I'm Muhil's AI assistant. Ask me about his projects, skills, certifications, or anything!",
+      text: "Hi! I'm Muhil's AI assistant. Ask me about his projects, skills, 100+ LeetCode progress, certifications, or availability for internships!",
       sender: 'bot',
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const isFirstRender = useRef(true);
-  const { ref: sectionRef, inView } = useInView(0.1);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatWindowRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll on new message
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
+    if (isOpen && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTo({
-        top: messagesContainerRef.current.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
-  }, [messages, isTyping]);
+  }, [messages, isTyping, isOpen]);
 
-  const handleSend = async (text?: string) => {
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  const handleSend = (text?: string) => {
     const userText = text || input.trim();
-    if (!userText) return;
+    if (!userText || isTyping) return;
 
     const userMsg: Message = {
       id: messages.length + 1,
@@ -76,132 +80,164 @@ export default function ChatBot() {
       };
       setMessages((prev) => [...prev, botMsg]);
       setIsTyping(false);
-    }, 500 + Math.random() * 500);
+    }, 450 + Math.random() * 350);
   };
 
   return (
-    <section id="chatbot" className="relative py-24 lg:py-32" ref={sectionRef}>
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
-          {/* Left Column */}
+    <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 select-none">
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            className="lg:w-[40%]"
+            ref={chatWindowRef}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="w-[calc(100vw-2.5rem)] sm:w-[390px] h-[540px] max-h-[80vh] flex flex-col bg-[#070b14]/95 border border-[rgba(34,82,255,0.3)] rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.8),0_0_30px_rgba(34,82,255,0.15)] backdrop-blur-2xl overflow-hidden mb-3.5"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-[2px] bg-[#2252FF]" />
-              <span className="text-[rgba(255,255,255,0.5)] text-xs font-['Geist_Mono'] uppercase tracking-[2px]">
-                AI Assistant
-              </span>
-            </div>
-            <h2 className="text-3xl lg:text-[40px] font-bold text-white font-['Geist'] leading-[1.1] mb-6">
-              Ask Muhil AI
-            </h2>
-            <p className="text-[rgba(255,255,255,0.65)] text-base leading-[1.7] font-['Geist'] mb-8">
-              Can't reach me? Ask my AI clone anything about my work, skills, certifications, projects, or availability for internships and collaborations.
-            </p>
-
-            {/* Features */}
-            <div className="space-y-4">
-              {[
-                { icon: Sparkles, text: 'Instant answers about my portfolio' },
-                { icon: Bot, text: '24/7 availability for queries' },
-                { icon: User, text: 'Personalized responses about my journey' },
-              ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[rgba(34,82,255,0.15)] flex items-center justify-center">
-                    <feature.icon size={16} className="text-[#2252FF]" />
-                  </div>
-                  <span className="text-[rgba(255,255,255,0.6)] text-sm font-['Geist']">{feature.text}</span>
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3.5 border-b border-[rgba(255,255,255,0.08)] bg-[#04060a]/90">
+              <div className="flex items-center gap-2.5">
+                <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-[#2252FF] to-[#8B5CF6] flex items-center justify-center text-white shadow-[0_0_12px_rgba(34,82,255,0.4)]">
+                  <Bot size={18} />
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#D0FF71] border-2 border-[#04060a]" />
                 </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Right Column — Chat Interface */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:w-[60%]"
-          >
-            <div className="glass-outer">
-              <div className="glass-mid">
-                <div className="glass-inner">
-                  {/* Messages Area */}
-                  <div
-                    ref={messagesContainerRef}
-                    className="h-[320px] overflow-y-auto mb-4 space-y-4 pr-2"
-                    style={{ background: 'rgba(3, 3, 5, 0.6)', borderRadius: '12px', padding: '16px' }}
-                  >
-                    {messages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div
-                          className={`max-w-[80%] px-4 py-3 rounded-xl text-sm font-['Geist'] whitespace-pre-line ${
-                            msg.sender === 'user'
-                              ? 'bg-[#2252FF] text-white rounded-br-sm'
-                              : 'bg-[rgba(34,82,255,0.15)] text-[rgba(255,255,255,0.85)] rounded-bl-sm border border-[rgba(34,82,255,0.2)]'
-                          }`}
-                        >
-                          {msg.text}
-                        </div>
-                      </div>
-                    ))}
-                    {isTyping && (
-                      <div className="flex justify-start">
-                        <div className="bg-[rgba(34,82,255,0.15)] px-4 py-3 rounded-xl rounded-bl-sm border border-[rgba(34,82,255,0.2)]">
-                          <div className="flex gap-1">
-                            <span className="w-2 h-2 bg-[rgba(255,255,255,0.5)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                            <span className="w-2 h-2 bg-[rgba(255,255,255,0.5)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                            <span className="w-2 h-2 bg-[rgba(255,255,255,0.5)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-white text-sm font-semibold font-['Geist'] leading-none">
+                      Muhil AI
+                    </h3>
+                    <span className="text-[10px] font-['Geist_Mono'] px-1.5 py-0.5 rounded bg-[rgba(34,82,255,0.2)] text-[#2252FF] font-medium">
+                      Assistant
+                    </span>
                   </div>
-
-                  {/* Suggested Questions */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {suggestedQuestions.map((q) => (
-                      <button
-                        key={q}
-                        onClick={() => handleSend(q)}
-                        className="text-xs font-['Geist_Mono'] px-3 py-1.5 rounded-full border border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.5)] hover:border-[#2252FF] hover:text-[#2252FF] transition-all duration-200"
-                      >
-                        {q}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Input */}
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                      placeholder="Ask me anything about Muhil..."
-                      className="flex-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-3 text-sm text-white placeholder-[rgba(255,255,255,0.4)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors"
-                    />
-                    <button
-                      onClick={() => handleSend()}
-                      disabled={!input.trim() || isTyping}
-                      className="bg-[#2252FF] text-white px-5 py-3 rounded-lg font-['Geist'] text-sm hover:bg-[#3952FF] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      <Send size={16} />
-                    </button>
-                  </div>
+                  <p className="text-[rgba(255,255,255,0.45)] text-[11px] font-['Geist_Mono'] mt-1">
+                    Ask anything about Muhil's work
+                  </p>
                 </div>
               </div>
+
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[rgba(255,255,255,0.5)] hover:text-white hover:bg-white/5 transition-colors"
+                  aria-label="Close Chatbot"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Messages Body */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 text-sm font-['Geist']">
+              {messages.map((msg) => {
+                const isUser = msg.sender === 'user';
+                return (
+                  <div
+                    key={msg.id}
+                    className={`flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
+                  >
+                    <div
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                        isUser
+                          ? 'bg-[rgba(34,82,255,0.2)] text-[#2252FF]'
+                          : 'bg-white/10 text-white'
+                      }`}
+                    >
+                      {isUser ? <User size={15} /> : <Bot size={15} />}
+                    </div>
+
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-line ${
+                        isUser
+                          ? 'bg-[#2252FF] text-white rounded-tr-none shadow-[0_2px_10px_rgba(34,82,255,0.3)]'
+                          : 'bg-[rgba(255,255,255,0.06)] text-[rgba(255,255,255,0.9)] border border-[rgba(255,255,255,0.08)] rounded-tl-none'
+                      }`}
+                    >
+                      {msg.text}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {isTyping && (
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-white/10 text-white flex items-center justify-center shrink-0">
+                    <Bot size={15} />
+                  </div>
+                  <div className="bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] rounded-2xl rounded-tl-none px-4 py-2.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-[#2252FF] rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1.5 h-1.5 bg-[#2252FF] rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1.5 h-1.5 bg-[#2252FF] rounded-full animate-bounce" />
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Quick Suggested Questions */}
+            <div className="px-3.5 py-2 border-t border-[rgba(255,255,255,0.06)] bg-[#04060a]/50 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <Sparkles size={12} className="text-[#FFCD00] shrink-0 ml-1" />
+              {suggestedQuestions.map((q) => (
+                <button
+                  key={q}
+                  onClick={() => handleSend(q)}
+                  className="shrink-0 text-[11px] font-['Geist_Mono'] px-2.5 py-1 rounded-full border border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.7)] hover:border-[#2252FF] hover:text-white hover:bg-[rgba(34,82,255,0.1)] transition-colors whitespace-nowrap"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+
+            {/* Input Bar */}
+            <div className="p-3 border-t border-[rgba(255,255,255,0.08)] bg-[#04060a]/80">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSend();
+                }}
+                className="flex items-center gap-2"
+              >
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask Muhil AI anything..."
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-[rgba(255,255,255,0.35)] font-['Geist'] focus:outline-none focus:border-[#2252FF] transition-colors"
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim() || isTyping}
+                  className="w-9 h-9 rounded-xl bg-[#2252FF] hover:bg-[#1a44e0] text-white flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_0_12px_rgba(34,82,255,0.4)] shrink-0"
+                  aria-label="Send Message"
+                >
+                  <Send size={14} />
+                </button>
+              </form>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Trigger Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsOpen(!isOpen)}
+        className="group flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#0a0f1d] border border-[rgba(34,82,255,0.4)] text-white shadow-[0_0_25px_rgba(34,82,255,0.3),0_4px_20px_rgba(0,0,0,0.5)] hover:border-[#2252FF] hover:shadow-[0_0_30px_rgba(34,82,255,0.5)] transition-all font-['Geist']"
+        aria-label="Toggle Muhil AI Chatbot"
+      >
+        <div className="relative">
+          <span className="text-lg">🤖</span>
+          <span className="absolute -top-1 -right-1 flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D0FF71] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D0FF71]" />
+          </span>
         </div>
-      </div>
-    </section>
+        <span className="text-xs font-semibold tracking-wide text-white group-hover:text-[#2252FF] transition-colors">
+          {isOpen ? 'Close AI' : 'Muhil AI'}
+        </span>
+      </motion.button>
+    </div>
   );
 }
