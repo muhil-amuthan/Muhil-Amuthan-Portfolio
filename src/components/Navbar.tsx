@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, FileText } from 'lucide-react';
 
@@ -16,22 +16,29 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
+  const navRef = useRef<HTMLElement>(null);
 
+  // Scroll state + progress bar
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
       if (window.scrollY < 200) {
         setActiveSection('home');
       }
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
     };
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Track active section via IntersectionObserver
   useEffect(() => {
+    if (location.pathname !== '/') return;
     const sectionIds = navLinks.map((l) => l.id);
     const observers: IntersectionObserver[] = [];
 
@@ -58,43 +65,59 @@ export default function Navbar() {
     };
   }, [location.pathname]);
 
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [location]);
+  // Close mobile menu on route change
+  useEffect(() => setMobileOpen(false), [location]);
 
-  // Prevent body scroll when mobile menu is open
+  // Body scroll lock + Escape key to close
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileOpen(false);
+    };
+    if (mobileOpen) window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
     };
   }, [mobileOpen]);
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    setMobileOpen(false);
-    if (href.startsWith('/#')) {
+  // Smooth scroll helper
+  const scrollToSection = useCallback(
+    (href: string) => {
       const id = href.replace('/#', '');
       if (location.pathname !== '/') {
         navigate(href);
-      } else {
-        e.preventDefault();
-        const el = document.getElementById(id);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-          window.history.pushState(null, '', href);
-          setActiveSection(id);
-        } else if (id === 'home') {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          window.history.pushState(null, '', '/');
-          setActiveSection('home');
-        }
+        return;
       }
-    }
+      if (id === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.history.pushState(null, '', '/');
+        setActiveSection('home');
+        return;
+      }
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        window.history.pushState(null, '', href);
+        setActiveSection(id);
+      }
+    },
+    [location.pathname, navigate]
+  );
+
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    e.preventDefault();
+    setMobileOpen(false);
+    scrollToSection(href);
   };
 
   return (
     <>
       <nav
+        ref={navRef}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? 'bg-[rgba(3,3,5,0.92)] border-b border-[rgba(255,255,255,0.08)] shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
@@ -102,6 +125,12 @@ export default function Navbar() {
         }`}
         style={{ backdropFilter: 'blur(20px)' }}
       >
+        {/* Scroll progress bar */}
+        <div
+          className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#2252FF] to-[#8B5CF6] transition-[width] duration-100 ease-linear pointer-events-none"
+          style={{ width: `${progress * 100}%` }}
+        />
+
         <div className="max-w-[1280px] mx-auto px-5 lg:px-8 h-16 flex items-center justify-between">
           <Link
             to="/"
@@ -173,6 +202,7 @@ export default function Navbar() {
             className="lg:hidden text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-[rgba(255,255,255,0.06)] active:scale-95 transition-transform"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
