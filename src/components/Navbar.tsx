@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, FileText } from 'lucide-react';
 
@@ -15,51 +15,116 @@ const navLinks = [
   { name: 'Contact', href: '/#contact' },
 ];
 
+const sectionIds = navLinks.map((l) => l.href.replace('/#', ''));
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
+  const [progress, setProgress] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
+  const navRef = useRef<HTMLElement>(null);
 
+  // ---------- Scroll state + progress bar ----------
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 80);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 80);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // ---------- Scroll-spy: highlight the section in view ----------
   useEffect(() => {
-    setMobileOpen(false);
-  }, [location]);
+    if (location.pathname !== '/') return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        }
+      },
+      { rootMargin: '-40% 0px -55% 0px' } // trigger near viewport middle
+    );
+    for (const id of sectionIds) {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, [location.pathname]);
 
-  // Prevent body scroll when mobile menu is open
+  // ---------- Close mobile menu on route change ----------
+  useEffect(() => setMobileOpen(false), [location]);
+
+  // ---------- Body scroll lock + Escape to close ----------
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMobileOpen(false);
+    if (mobileOpen) window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
+    };
   }, [mobileOpen]);
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    setMobileOpen(false);
-    if (href.startsWith('/#')) {
+  // ---------- Scroll to hash AFTER navigation completes ----------
+  useEffect(() => {
+    if (location.pathname === '/' && location.hash) {
+      // wait a tick so the target page has rendered
+      const id = location.hash.replace('#', '');
+      requestAnimationFrame(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+  }, [location.pathname, location.hash]);
+
+  // ---------- Smooth anchor helper ----------
+  const scrollToSection = useCallback(
+    (href: string) => {
       const id = href.replace('/#', '');
       if (location.pathname !== '/') {
-        navigate(href);
-      } else {
-        e.preventDefault();
-        const el = document.getElementById(id) || (id === 'profiles' ? document.getElementById('coding-profiles') : null);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-          window.history.pushState(null, '', href);
-        } else if (id === 'home') {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          window.history.pushState(null, '', '/');
-        }
+        navigate(href); // hash effect above handles the scroll after render
+        return;
       }
-    }
+      if (id === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.history.pushState(null, '', '/');
+        return;
+      }
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        window.history.pushState(null, '', href);
+      }
+    },
+    [location.pathname, navigate]
+  );
+
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    e.preventDefault();
+    setMobileOpen(false);
+    scrollToSection(href);
+  };
+
+  const linkClass = (href: string) => {
+    const id = href.replace('/#', '');
+    const active = location.pathname === '/' && activeSection === id;
+    return `text-[13px] font-['Geist'] transition-colors duration-200 relative group whitespace-nowrap ${
+      active ? 'text-white' : 'text-[rgba(255,255,255,0.6)] hover:text-white'
+    }`;
   };
 
   return (
     <>
       <nav
+        ref={navRef}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? 'bg-[rgba(3,3,5,0.95)] border-b border-[rgba(255,255,255,0.08)]'
@@ -67,13 +132,17 @@ export default function Navbar() {
         }`}
         style={{ backdropFilter: 'blur(20px)' }}
       >
+        {/* Scroll progress bar */}
+        <div
+          className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-[#2252FF] to-[#8C5AFF] transition-[width] duration-100 ease-linear"
+          style={{ width: `${progress * 100}%` }}
+        />
+
         <div className="max-w-[1280px] mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link
             to="/"
             onClick={() => {
-              if (location.pathname === '/') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
+              if (location.pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="text-white font-bold text-xl tracking-wider font-['Geist']"
           >
@@ -87,10 +156,16 @@ export default function Navbar() {
                 key={link.name}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="text-[rgba(255,255,255,0.6)] hover:text-white text-[13px] font-['Geist'] transition-colors duration-200 relative group whitespace-nowrap"
+                className={linkClass(link.href)}
               >
                 {link.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#2252FF] transition-all duration-300 group-hover:w-full" />
+                <span
+                  className={`absolute -bottom-1 left-0 h-[2px] bg-[#2252FF] transition-all duration-300 ${
+                    location.pathname === '/' && activeSection === link.href.replace('/#', '')
+                      ? 'w-full'
+                      : 'w-0 group-hover:w-full'
+                  }`}
+                />
               </a>
             ))}
           </div>
@@ -121,26 +196,31 @@ export default function Navbar() {
             className="lg:hidden text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-[rgba(255,255,255,0.06)] active:scale-95 transition-transform"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </nav>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile menu overlay — staggered entrance */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-[rgba(3,3,5,0.98)] backdrop-blur-xl flex flex-col items-center justify-center gap-5 lg:hidden overflow-y-auto py-16 px-6">
-          {navLinks.map((link) => (
+        <div className="fixed inset-0 z-40 bg-[rgba(3,3,5,0.98)] backdrop-blur-xl flex flex-col items-center justify-center gap-1 lg:hidden overflow-y-auto py-16 px-6">
+          {navLinks.map((link, i) => (
             <a
               key={link.name}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="text-white text-xl sm:text-2xl font-['Geist'] font-medium hover:text-[#2252FF] transition-colors py-2 px-6 min-h-[44px] flex items-center active:scale-95 touch-manipulation"
+              className="text-white text-xl sm:text-2xl font-['Geist'] font-medium hover:text-[#2252FF] transition-colors py-2 px-6 min-h-[44px] flex items-center active:scale-95 touch-manipulation animate-[navIn_0.35s_ease_both]"
+              style={{ animationDelay: `${i * 40}ms` }}
             >
               {link.name}
             </a>
           ))}
-          <div className="flex flex-col items-center gap-4 mt-4 pt-6 border-t border-[rgba(255,255,255,0.08)] w-48">
+          <div
+            className="flex flex-col items-center gap-4 mt-4 pt-6 border-t border-[rgba(255,255,255,0.08)] w-48 animate-[navIn_0.35s_ease_both]"
+            style={{ animationDelay: `${navLinks.length * 40}ms` }}
+          >
             <a
               href="/resume.pdf"
               target="_blank"
@@ -160,6 +240,14 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      {/* One-time keyframe for the stagger animation */}
+      <style>{`
+        @keyframes navIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </>
   );
 }
