@@ -1,109 +1,114 @@
 import { useEffect, useRef } from 'react';
 
-export default function CustomCursor() {
+export default function GlowCursor() {
+  const glowRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
-  const posRef = useRef({ x: 0, y: 0 });
-  const ringPosRef = useRef({ x: 0, y: 0 });
-  const isHoveringRef = useRef(false);
+  const mouseRef = useRef({ x: -100, y: -100 });
+  const glowPosRef = useRef({ x: -100, y: -100 });
+  const glowVelRef = useRef({ x: 0, y: 0 });
+  const hoveringRef = useRef(false);
+  const pressedRef = useRef(false);
 
   useEffect(() => {
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (isTouchDevice) return;
+    if (typeof window === 'undefined') return;
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
 
+    const glow = glowRef.current;
     const dot = dotRef.current;
-    const ring = ringRef.current;
-    if (!dot || !ring) return;
+    if (!glow || !dot) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      posRef.current = { x: e.clientX, y: e.clientY };
+    const onMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
     };
 
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.dataset.cursor === 'pointer'
-      ) {
-        isHoveringRef.current = true;
-      }
+    const isInteractive = (el: HTMLElement) =>
+      !!el.closest('a, button, [role="button"], input, textarea, select, [data-cursor="pointer"]');
+
+    const onOver = (e: MouseEvent) => {
+      hoveringRef.current = isInteractive(e.target as HTMLElement);
+      document.body.style.cursor = hoveringRef.current ? 'pointer' : 'auto';
     };
 
-    const handleMouseOut = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.dataset.cursor === 'pointer'
-      ) {
-        isHoveringRef.current = false;
-      }
-    };
+    const onDown = () => { pressedRef.current = true; };
+    const onUp = () => { pressedRef.current = false; };
 
     let rafId: number;
     const animate = () => {
-      ringPosRef.current.x += (posRef.current.x - ringPosRef.current.x) * 0.15;
-      ringPosRef.current.y += (posRef.current.y - ringPosRef.current.y) * 0.15;
+      // Spring physics — glow "catches up" with a slight bounce feel
+      const stiffness = 0.08;
+      const damping = 0.75;
 
-      const dotSize = isHoveringRef.current ? 16 : 12;
-      const ringSize = isHoveringRef.current ? 56 : 40;
+      glowVelRef.current.x =
+        (glowVelRef.current.x + (mouseRef.current.x - glowPosRef.current.x) * stiffness) * damping;
+      glowVelRef.current.y =
+        (glowVelRef.current.y + (mouseRef.current.y - glowPosRef.current.y) * stiffness) * damping;
 
-      dot.style.transform = `translate(${posRef.current.x - dotSize / 2}px, ${posRef.current.y - dotSize / 2}px)`;
-      dot.style.width = `${dotSize}px`;
-      dot.style.height = `${dotSize}px`;
+      glowPosRef.current.x += glowVelRef.current.x;
+      glowPosRef.current.y += glowVelRef.current.y;
 
-      ring.style.transform = `translate(${ringPosRef.current.x - ringSize / 2}px, ${ringPosRef.current.y - ringSize / 2}px)`;
-      ring.style.width = `${ringSize}px`;
-      ring.style.height = `${ringSize}px`;
+      const scale = pressedRef.current ? 0.7 : hoveringRef.current ? 1.6 : 1;
+      const glowSize = 80;
+
+      glow.style.transform = `translate(${glowPosRef.current.x - glowSize / 2}px, ${
+        glowPosRef.current.y - glowSize / 2}px) scale(${scale})`;
+      dot.style.transform = `translate(${mouseRef.current.x - 3}px, ${mouseRef.current.y - 3}px)`;
 
       rafId = requestAnimationFrame(animate);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseover', handleMouseOver);
-    document.addEventListener('mouseout', handleMouseOut);
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.addEventListener('mouseover', onOver, { passive: true });
+    window.addEventListener('mousedown', onDown);
+    window.addEventListener('mouseup', onUp);
     rafId = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseover', handleMouseOver);
-      document.removeEventListener('mouseout', handleMouseOut);
+      window.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseover', onOver);
+      window.removeEventListener('mousedown', onDown);
+      window.removeEventListener('mouseup', onUp);
       cancelAnimationFrame(rafId);
+      document.body.style.cursor = 'auto';
     };
   }, []);
 
-  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-  if (isTouchDevice) return null;
+  if (typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+    return null;
+  }
 
   return (
     <>
+      {/* Soft trailing glow */}
+      <div
+        ref={glowRef}
+        className="fixed top-0 left-0 z-[9998] pointer-events-none"
+        style={{
+          width: '80px',
+          height: '80px',
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(34,82,255,0.35) 0%, rgba(140,90,255,0.15) 45%, transparent 70%)',
+          filter: 'blur(4px)',
+          transition: 'transform 0.1s linear',
+          willChange: 'transform',
+        }}
+      />
+      {/* Precise center dot */}
       <div
         ref={dotRef}
         className="fixed top-0 left-0 z-[9999] pointer-events-none mix-blend-difference"
         style={{
-          width: '12px',
-          height: '12px',
+          width: '6px',
+          height: '6px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, #FFFFFF 0%, #2252FF 100%)',
-          transition: 'width 0.2s ease, height 0.2s ease',
+          background: '#fff',
+          willChange: 'transform',
         }}
       />
-      <div
-        ref={ringRef}
-        className="fixed top-0 left-0 z-[9998] pointer-events-none"
-        style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          border: '1px solid rgba(34, 82, 255, 0.5)',
-          transition: 'width 0.3s ease, height 0.3s ease',
-        }}
-      />
+      <style>{`
+        * { cursor: none; }
+        input, textarea, select { cursor: text; }
+      `}</style>
     </>
   );
 }
