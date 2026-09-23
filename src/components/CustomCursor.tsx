@@ -1,155 +1,234 @@
 import { useEffect, useRef } from 'react';
 
-type Particle = { el: HTMLDivElement; life: number };
+// Swap this to change the whole vibe — each is a hue range for the trail/glow
+const THEMES = {
+  aurora: { hueStart: 160, hueEnd: 280, saturation: 90, lightness: 60 }, // teal → violet
+  sunset: { hueStart: 10, hueEnd: 320, saturation: 95, lightness: 60 },  // orange → pink
+  ocean: { hueStart: 190, hueEnd: 220, saturation: 90, lightness: 55 },  // cyan → blue
+  neon: { hueStart: 300, hueEnd: 180, saturation: 100, lightness: 60 },  // magenta → cyan
+};
 
-export default function MagneticCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLSpanElement>(null);
-  const trailRef = useRef<HTMLDivElement>(null);
+const ACTIVE_THEME: keyof typeof THEMES = 'aurora'; // <- change this
+
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  maxLife: number;
+  size: number;
+  hue: number;
+}
+
+interface Ripple {
+  x: number;
+  y: number;
+  life: number;
+  maxLife: number;
+  hue: number;
+}
+
+export default function CustomCursor() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const coreRef = useRef<HTMLDivElement>(null);
+  const mouseRef = useRef({ x: -100, y: -100 });
+  const smoothRef = useRef({ x: -100, y: -100 });
   const particlesRef = useRef<Particle[]>([]);
+  const ripplesRef = useRef<Ripple[]>([]);
+  const isHoveringRef = useRef(false);
+  const angleRef = useRef(0);
+  const hueTimeRef = useRef(0);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isTouchDevice) return;
 
-    const cursor = cursorRef.current;
-    const label = labelRef.current;
-    const trail = trailRef.current;
-    if (!cursor || !label || !trail) return;
+    const canvas = canvasRef.current;
+    const core = coreRef.current;
+    if (!canvas || !core) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    const target = { x: -100, y: -100 };
-    const pos = { x: -100, y: -100 };
-    let hoverEl: HTMLElement | null = null;
-    let labelText = '';
-    let rafId: number;
-    let lastSpawn = 0;
+    const theme = THEMES[ACTIVE_THEME];
 
-    const onMove = (e: MouseEvent) => {
-      target.x = e.clientX;
-      target.y = e.clientY;
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
     };
 
-    const onOver = (e: MouseEvent) => {
-      const el = (e.target as HTMLElement).closest<HTMLElement>(
-        'a, button, [role="button"], [data-cursor="pointer"]'
-      );
-      hoverEl = el;
-      if (el) {
-        labelText = el.dataset.cursorLabel || '';
-        const r = el.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        // Magnetic pull toward the element's center (max 8px)
-        const pull = 0.25;
-        target.x = e.clientX + (cx - e.clientX) * pull;
-        target.y = e.clientY + (cy - e.clientY) * pull;
-      } else {
-        labelText = '';
+    const getInteractive = (target: HTMLElement) =>
+      target.tagName === 'A' ||
+      target.tagName === 'BUTTON' ||
+      target.closest('a') ||
+      target.closest('button') ||
+      target.dataset.cursor === 'pointer';
+
+    const handleMouseOver = (e: MouseEvent) => {
+      if (getInteractive(e.target as HTMLElement)) isHoveringRef.current = true;
+    };
+    const handleMouseOut = (e: MouseEvent) => {
+      if (getInteractive(e.target as HTMLElement)) isHoveringRef.current = false;
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      const hue = theme.hueStart + (Math.sin(hueTimeRef.current) + 1) * 0.5 * (theme.hueEnd - theme.hueStart);
+      ripplesRef.current.push({ x: e.clientX, y: e.clientY, life: 0, maxLife: 40, hue });
+      // Burst of particles on click
+      for (let i = 0; i < 12; i++) {
+        const a = (Math.PI * 2 * i) / 12;
+        particlesRef.current.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: Math.cos(a) * (2 + Math.random() * 2),
+          vy: Math.sin(a) * (2 + Math.random() * 2),
+          life: 0,
+          maxLife: 35 + Math.random() * 15,
+          size: 2 + Math.random() * 2,
+          hue,
+        });
       }
-      label.textContent = labelText;
-      label.style.opacity = labelText ? '1' : '0';
     };
 
-    const spawnParticle = (x: number, y: number) => {
-      if (particlesRef.current.length > 30) return;
-      const el = document.createElement('div');
-      el.style.cssText = `position:fixed;top:0;left:0;width:5px;height:5px;border-radius:50%;
-        background:rgba(99,102,241,0.7);pointer-events:none;z-index:9997;will-change:transform,opacity;`;
-      trail.appendChild(el);
-      particlesRef.current.push({ el, life: 1 });
-      el.style.transform = `translate(${x - 2.5}px, ${y - 2.5}px)`;
-    };
+    let rafId: number;
+    let frame = 0;
 
     const animate = () => {
-      // Fast catch-up with magnetic easing
-      const speed = hoverEl ? 0.28 : 0.5;
-      pos.x += (target.x - pos.x) * speed;
-      pos.y += (target.y - pos.y) * speed;
+      frame++;
+      hueTimeRef.current += 0.008;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const size = labelText ? 72 : hoverEl ? 48 : 20;
-      cursor.style.width = `${size}px`;
-      cursor.style.height = `${size}px`;
-      cursor.style.transform = `translate(${pos.x - size / 2}px, ${pos.y - size / 2}px)`;
-      cursor.style.background = labelText
-        ? 'rgba(99,102,241,0.95)'
-        : hoverEl
-          ? 'rgba(99,102,241,0.18)'
-          : 'rgba(99,102,241,0.35)';
-      cursor.style.backdropFilter = labelText ? 'none' : 'blur(2px)';
+      smoothRef.current.x += (mouseRef.current.x - smoothRef.current.x) * 0.18;
+      smoothRef.current.y += (mouseRef.current.y - smoothRef.current.y) * 0.18;
+      const { x, y } = smoothRef.current;
 
-      // Particle trail
-      const now = performance.now();
-      if (now - lastSpawn > 40) {
-        lastSpawn = now;
-        spawnParticle(pos.x, pos.y);
+      // Cycling hue based on time (slow oscillation across the theme's range)
+      const cycleHue = theme.hueStart + (Math.sin(hueTimeRef.current) + 1) * 0.5 * (theme.hueEnd - theme.hueStart);
+
+      // Spawn trail particles
+      if (frame % 2 === 0) {
+        particlesRef.current.push({
+          x: x + (Math.random() - 0.5) * 4,
+          y: y + (Math.random() - 0.5) * 4,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          life: 0,
+          maxLife: 30 + Math.random() * 20,
+          size: isHoveringRef.current ? 3 + Math.random() * 2 : 1.5 + Math.random() * 1.5,
+          hue: cycleHue,
+        });
       }
+
+      // Draw + update particles
       particlesRef.current = particlesRef.current.filter((p) => {
-        p.life -= 0.045;
-        if (p.life <= 0) {
-          p.el.remove();
-          return false;
-        }
-        p.el.style.opacity = String(p.life);
-        const s = 0.4 + p.life * 0.8;
-        p.el.style.transform = p.el.style.transform.replace(/scale\([^)]*\)/, '') + ` scale(${s})`;
+        p.life++;
+        p.x += p.vx;
+        p.y += p.vy;
+        const t = p.life / p.maxLife;
+        if (t >= 1) return false;
+
+        const alpha = 1 - t;
+        const size = p.size * (1 - t * 0.5);
+        const color = `hsla(${p.hue}, ${theme.saturation}%, ${theme.lightness}%, ${alpha})`;
+        const transparent = `hsla(${p.hue}, ${theme.saturation}%, ${theme.lightness}%, 0)`;
+
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 2.5);
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, transparent);
+
+        ctx.beginPath();
+        ctx.fillStyle = gradient;
+        ctx.arc(p.x, p.y, size * 2.5, 0, Math.PI * 2);
+        ctx.fill();
         return true;
       });
+
+      // Click ripples
+      ripplesRef.current = ripplesRef.current.filter((r) => {
+        r.life++;
+        const t = r.life / r.maxLife;
+        if (t >= 1) return false;
+        const radius = t * 50;
+        const alpha = 1 - t;
+        ctx.beginPath();
+        ctx.strokeStyle = `hsla(${r.hue}, ${theme.saturation}%, ${theme.lightness}%, ${alpha})`;
+        ctx.lineWidth = 2 * (1 - t);
+        ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+        return true;
+      });
+
+      // Orbiting satellites, colored across the hue range
+      angleRef.current += isHoveringRef.current ? 0.12 : 0.06;
+      const orbitRadius = isHoveringRef.current ? 24 : 15;
+      const satelliteCount = isHoveringRef.current ? 5 : 3;
+
+      for (let i = 0; i < satelliteCount; i++) {
+        const a = angleRef.current + (i * Math.PI * 2) / satelliteCount;
+        const sx = x + Math.cos(a) * orbitRadius;
+        const sy = y + Math.sin(a) * orbitRadius;
+        const satSize = isHoveringRef.current ? 3.5 : 2.2;
+        const satHue = theme.hueStart + (i / satelliteCount) * (theme.hueEnd - theme.hueStart);
+
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${satHue}, ${theme.saturation}%, 85%, 0.95)`;
+        ctx.arc(sx, sy, satSize, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${satHue}, ${theme.saturation}%, ${theme.lightness}%, 0.5)`;
+        ctx.arc(sx, sy, satSize + 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Core dot with glow that matches the cycling hue
+      const coreSize = isHoveringRef.current ? 11 : 7;
+      core.style.transform = `translate(${x - coreSize / 2}px, ${y - coreSize / 2}px)`;
+      core.style.width = `${coreSize}px`;
+      core.style.height = `${coreSize}px`;
+      core.style.boxShadow = `0 0 10px 3px hsla(${cycleHue}, ${theme.saturation}%, ${theme.lightness}%, 0.85)`;
 
       rafId = requestAnimationFrame(animate);
     };
 
-    window.addEventListener('mousemove', onMove, { passive: true });
-    document.addEventListener('mouseover', onOver, { passive: true });
+    window.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mouseout', handleMouseOut);
+    document.addEventListener('click', handleClick);
     rafId = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseover', onOver);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
+      document.removeEventListener('click', handleClick);
       cancelAnimationFrame(rafId);
-      particlesRef.current.forEach((p) => p.el.remove());
-      particlesRef.current = [];
     };
   }, []);
 
-  if (typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
-    return null;
-  }
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  if (isTouchDevice) return null;
 
   return (
     <>
-      <div ref={trailRef} className="pointer-events-none" />
-      {/* Main cursor blob */}
+      <canvas ref={canvasRef} className="fixed top-0 left-0 z-[9998] pointer-events-none" />
       <div
-        ref={cursorRef}
-        className="fixed top-0 left-0 z-[9999] pointer-events-none flex items-center justify-center"
+        ref={coreRef}
+        className="fixed top-0 left-0 z-[9999] pointer-events-none rounded-full"
         style={{
-          width: '20px',
-          height: '20px',
-          borderRadius: '50%',
-          background: 'rgba(99,102,241,0.35)',
-          border: '1px solid rgba(99,102,241,0.6)',
-          transition: 'width 0.25s ease, height 0.25s ease, background 0.25s ease',
-          willChange: 'transform',
+          width: '7px',
+          height: '7px',
+          background: '#FFFFFF',
+          transition: 'width 0.2s ease, height 0.2s ease',
         }}
-      >
-        <span
-          ref={labelRef}
-          style={{
-            fontSize: '11px',
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: '#fff',
-            opacity: 0,
-            transition: 'opacity 0.2s ease',
-            whiteSpace: 'nowrap',
-          }}
-        />
-      </div>
-      <style>{`
-        * { cursor: none; }
-        input, textarea { cursor: text; }
-      `}</style>
+      />
     </>
   );
 }
