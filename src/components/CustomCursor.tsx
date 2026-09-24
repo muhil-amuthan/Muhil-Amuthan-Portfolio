@@ -24,7 +24,6 @@ export default function CustomCursor() {
 
     const dot = dotRef.current;
     const ring = ringRef.current;
-    const label = labelRef.current;
     const dotInner = dot?.firstElementChild as HTMLElement | null;
     const ringInner = ring?.firstElementChild as HTMLElement | null;
     if (!dot || !ring || !dotInner || !ringInner) return;
