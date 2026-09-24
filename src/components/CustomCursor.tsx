@@ -1,204 +1,1223 @@
+```tsx
 import { useEffect, useRef } from 'react';
 
+type CursorMode =
+  | 'default'
+  | 'link'
+  | 'project'
+  | 'external'
+  | 'download'
+  | 'contact'
+  | 'preview'
+  | 'magnetic';
+
+interface CursorState {
+  mode: CursorMode;
+  label: string;
+  icon: string;
+}
+
+const CURSOR_STATES: Record<CursorMode, CursorState> = {
+  default: {
+    mode: 'default',
+    label: '',
+    icon: '',
+  },
+
+  link: {
+    mode: 'link',
+    label: 'OPEN',
+    icon: '↗',
+  },
+
+  project: {
+    mode: 'project',
+    label: 'VIEW PROJECT',
+    icon: '↗',
+  },
+
+  external: {
+    mode: 'external',
+    label: 'OPEN',
+    icon: '↗',
+  },
+
+  download: {
+    mode: 'download',
+    label: 'DOWNLOAD',
+    icon: '↓',
+  },
+
+  contact: {
+    mode: 'contact',
+    label: 'CONTACT',
+    icon: '✦',
+  },
+
+  preview: {
+    mode: 'preview',
+    label: 'PREVIEW',
+    icon: '◉',
+  },
+
+  magnetic: {
+    mode: 'magnetic',
+    label: '',
+    icon: '',
+  },
+};
+
 export default function CustomCursor() {
+  const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLSpanElement>(null);
 
-  const posRef = useRef({ x: -100, y: -100 });       // mouse position (instant)
-  const ringPosRef = useRef({ x: -100, y: -100 });   // smoothed ring position
-  const ringVelRef = useRef({ x: 0, y: 0 });         // spring velocity
-  const isHoveredRef = useRef(false);
-  const isClickedRef = useRef(false);
-  const isVisibleRef = useRef(false);
-  const modeRef = useRef<'default' | 'hide'>('default');
-  const rafIdRef = useRef<number>(0);
+  const labelRef = useRef<HTMLSpanElement>(null);
+  const iconRef = useRef<HTMLSpanElement>(null);
+
+  const positionRef = useRef({
+    x: -100,
+    y: -100,
+  });
+
+  const ringPositionRef = useRef({
+    x: -100,
+    y: -100,
+  });
+
+  const velocityRef = useRef({
+    x: 0,
+    y: 0,
+  });
+
+  const targetScaleRef = useRef(1);
+  const currentScaleRef = useRef(1);
+
+  const visibleRef = useRef(false);
+  const clickedRef = useRef(false);
+
+  const currentModeRef = useRef<CursorMode>('default');
+
+  const magneticElementRef =
+    useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    // ── Bail out early on touch / coarse-pointer devices ──
-    const isTouch =
+    /* --------------------------------------------------
+       DEVICE CHECK
+    -------------------------------------------------- */
+
+    const isTouchDevice =
       window.matchMedia('(pointer: coarse)').matches ||
       'ontouchstart' in window ||
       navigator.maxTouchPoints > 0;
-    if (isTouch) return;
 
+    if (isTouchDevice) {
+      return;
+    }
+
+    /* --------------------------------------------------
+       REDUCED MOTION
+    -------------------------------------------------- */
+
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
+    const cursor = cursorRef.current;
     const dot = dotRef.current;
     const ring = ringRef.current;
     const label = labelRef.current;
-    const dotInner = dot?.firstElementChild as HTMLElement | null;
-    const ringInner = ring?.firstElementChild as HTMLElement | null;
-    if (!dot || !ring || !dotInner || !ringInner) return;
+    const icon = iconRef.current;
 
-    // Hide the native cursor site-wide (custom cursor replaces it)
-    document.documentElement.style.cursor = 'none';
+    if (!cursor || !dot || !ring || !label || !icon) {
+      return;
+    }
 
-    const isInteractive = (el: Element | null): boolean => {
-      if (!el || !(el instanceof HTMLElement)) return false;
-      if (el.closest('[data-cursor="hide"]')) {
-        modeRef.current = 'hide';
-        return false;
+    let animationFrame = 0;
+
+    /* --------------------------------------------------
+       SHOW / HIDE
+    -------------------------------------------------- */
+
+    const showCursor = () => {
+      if (visibleRef.current) return;
+
+      visibleRef.current = true;
+
+      cursor.style.opacity = '1';
+    };
+
+    const hideCursor = () => {
+      visibleRef.current = false;
+
+      cursor.style.opacity = '0';
+
+      magneticElementRef.current = null;
+    };
+
+    /* --------------------------------------------------
+       UPDATE CURSOR CONTENT
+    -------------------------------------------------- */
+
+    const setCursorMode = (
+      mode: CursorMode
+    ) => {
+      if (currentModeRef.current === mode) {
+        return;
       }
-      modeRef.current = 'default';
-      return !!el.closest(
-        'a, button, [role="button"], input, textarea, select, label, summary, [data-cursor="pointer"], [contenteditable="true"]'
+
+      currentModeRef.current = mode;
+
+      const state = CURSOR_STATES[mode];
+
+      label.textContent = state.label;
+      icon.textContent = state.icon;
+
+      /* Reset magnetic element */
+
+      magneticElementRef.current = null;
+
+      /* ------------------------------------------------
+         SIZE
+      ------------------------------------------------ */
+
+      switch (mode) {
+        case 'project':
+          targetScaleRef.current = 1.55;
+          break;
+
+        case 'download':
+          targetScaleRef.current = 1.45;
+          break;
+
+        case 'contact':
+          targetScaleRef.current = 1.5;
+          break;
+
+        case 'preview':
+          targetScaleRef.current = 1.45;
+          break;
+
+        case 'external':
+        case 'link':
+          targetScaleRef.current = 1.35;
+          break;
+
+        default:
+          targetScaleRef.current = 1;
+      }
+
+      /* ------------------------------------------------
+         Visual state
+      ------------------------------------------------ */
+
+      cursor.dataset.mode = mode;
+    };
+
+    /* --------------------------------------------------
+       DETECT ELEMENT
+    -------------------------------------------------- */
+
+    const detectCursorMode = (
+      target: HTMLElement | null
+    ) => {
+      if (!target) {
+        setCursorMode('default');
+        return;
+      }
+
+      const customElement = target.closest(
+        '[data-cursor]'
+      ) as HTMLElement | null;
+
+      if (customElement) {
+        const customMode =
+          customElement.dataset.cursor as CursorMode;
+
+        if (CURSOR_STATES[customMode]) {
+          setCursorMode(customMode);
+
+          if (
+            customMode === 'magnetic'
+          ) {
+            magneticElementRef.current =
+              customElement;
+          }
+
+          return;
+        }
+      }
+
+      /* ------------------------------------------------
+         Automatic detection
+      ------------------------------------------------ */
+
+      const element = target.closest(
+        'a, button, [role="button"]'
+      ) as HTMLElement | null;
+
+      if (!element) {
+        setCursorMode('default');
+        return;
+      }
+
+      /* Download */
+
+      const download =
+        element.hasAttribute('download') ||
+        element.textContent
+          ?.toLowerCase()
+          .includes('download') ||
+        element.textContent
+          ?.toLowerCase()
+          .includes('resume');
+
+      if (download) {
+        setCursorMode('download');
+        return;
+      }
+
+      /* Contact */
+
+      const contact =
+        element.textContent
+          ?.toLowerCase()
+          .includes('contact') ||
+        element.getAttribute('href') === '#contact';
+
+      if (contact) {
+        setCursorMode('contact');
+        return;
+      }
+
+      /* Project */
+
+      const project =
+        element.closest(
+          '[data-project], .project-card, .project'
+        ) !== null;
+
+      if (project) {
+        setCursorMode('project');
+        return;
+      }
+
+      /* External link */
+
+      if (
+        element.tagName === 'A' &&
+        (element as HTMLAnchorElement).target ===
+          '_blank'
+      ) {
+        setCursorMode('external');
+        return;
+      }
+
+      /* Default link */
+
+      setCursorMode('link');
+    };
+
+    /* --------------------------------------------------
+       MOUSE MOVE
+    -------------------------------------------------- */
+
+    const handleMouseMove = (
+      event: MouseEvent
+    ) => {
+      const x = event.clientX;
+      const y = event.clientY;
+
+      /* Velocity */
+
+      velocityRef.current.x =
+        x - positionRef.current.x;
+
+      velocityRef.current.y =
+        y - positionRef.current.y;
+
+      positionRef.current.x = x;
+      positionRef.current.y = y;
+
+      showCursor();
+
+      /* Detect hovered element */
+
+      detectCursorMode(
+        event.target as HTMLElement
       );
-    };
 
-    const applyState = () => {
-      const hover = isHoveredRef.current;
-      const click = isClickedRef.current;
-      const hide = modeRef.current === 'hide';
+      /* ------------------------------------------------
+         MAGNETIC ELEMENT
+      ------------------------------------------------ */
 
-      const dotScale = hide ? 0 : click ? 0.7 : hover ? 1.6 : 1;
-      const ringScale = hide ? 0 : click ? 0.8 : hover ? 1.5 : 1;
+      const magnetic =
+        magneticElementRef.current;
 
-      dotInner.style.transform = `scale(${dotScale})`;
-      dotInner.style.opacity = hide ? '0' : '1';
+      if (magnetic) {
+        const rect =
+          magnetic.getBoundingClientRect();
 
-      ringInner.style.transform = `scale(${ringScale})`;
-      ringInner.style.opacity = hide ? '0' : '1';
-      ringInner.style.borderColor = hover ? 'rgba(34, 82, 255, 0.95)' : 'rgba(34, 82, 255, 0.45)';
-      ringInner.style.backgroundColor = hover ? 'rgba(34, 82, 255, 0.08)' : 'transparent';
-    };
+        const centerX =
+          rect.left + rect.width / 2;
 
-    // ── Event handlers ──────────────────────────────────────
-    const handleMouseMove = (e: MouseEvent) => {
-      posRef.current.x = e.clientX;
-      posRef.current.y = e.clientY;
+        const centerY =
+          rect.top + rect.height / 2;
 
-      if (!isVisibleRef.current) {
-        isVisibleRef.current = true;
-        dot.style.opacity = '1';
-        ring.style.opacity = '1';
-        ringPosRef.current.x = e.clientX;
-        ringPosRef.current.y = e.clientY;
-        ringVelRef.current.x = 0;
-        ringVelRef.current.y = 0;
-      }
+        const distanceX =
+          centerX - x;
 
-      // Dot tracks 1:1 with zero lag (hardware-accelerated)
-      dot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+        const distanceY =
+          centerY - y;
 
-      const interactive = isInteractive(e.target as Element);
-      if (interactive !== isHoveredRef.current) {
-        isHoveredRef.current = interactive;
-        applyState();
-      }
-    };
+        const maxDistance = 120;
 
-    const handleMouseDown = () => { isClickedRef.current = true; applyState(); };
-    const handleMouseUp = () => { isClickedRef.current = false; applyState(); };
+        const distance = Math.sqrt(
+          distanceX * distanceX +
+            distanceY * distanceY
+        );
 
-    const hide = () => {
-      isVisibleRef.current = false;
-      dot.style.opacity = '0';
-      ring.style.opacity = '0';
-    };
-    const show = () => {
-      isVisibleRef.current = true;
-      dot.style.opacity = '1';
-      ring.style.opacity = '1';
-    };
+        if (distance < maxDistance) {
+          const strength =
+            1 - distance / maxDistance;
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Accessibility: restore native cursor if user is keyboard-navigating
-      if (e.key === 'Tab') {
-        document.documentElement.style.cursor = '';
+          magnetic.style.transform =
+            `translate(
+              ${distanceX * strength * 0.12}px,
+              ${distanceY * strength * 0.12}px
+            )`;
+        } else {
+          magnetic.style.transform = '';
+          magneticElementRef.current = null;
+        }
       }
     };
-    const handleMouseMoveRestore = () => {
-      document.documentElement.style.cursor = 'none';
+
+    /* --------------------------------------------------
+       MOUSE DOWN
+    -------------------------------------------------- */
+
+    const handleMouseDown = () => {
+      clickedRef.current = true;
+
+      cursor.dataset.clicked = 'true';
+
+      targetScaleRef.current *= 0.85;
+
+      /* Click ripple */
+
+      if (!reducedMotion) {
+        ring.animate(
+          [
+            {
+              transform:
+                'translate3d(-50%, -50%, 0) scale(1)',
+              opacity: 0.9,
+            },
+            {
+              transform:
+                'translate3d(-50%, -50%, 0) scale(1.7)',
+              opacity: 0.2,
+            },
+            {
+              transform:
+                'translate3d(-50%, -50%, 0) scale(1)',
+              opacity: 0.9,
+            },
+          ],
+          {
+            duration: 400,
+            easing:
+              'cubic-bezier(0.16, 1, 0.3, 1)',
+          }
+        );
+      }
     };
 
-    // ── Spring physics loop (critically damped-ish feel) ────
-    const stiffness = 0.14;  // spring strength
-    const damping = 0.72;    // velocity retention (lower = snappier)
+    /* --------------------------------------------------
+       MOUSE UP
+    -------------------------------------------------- */
+
+    const handleMouseUp = () => {
+      clickedRef.current = false;
+
+      cursor.dataset.clicked = 'false';
+
+      const mode =
+        currentModeRef.current;
+
+      switch (mode) {
+        case 'project':
+          targetScaleRef.current = 1.55;
+          break;
+
+        case 'download':
+          targetScaleRef.current = 1.45;
+          break;
+
+        case 'contact':
+          targetScaleRef.current = 1.5;
+          break;
+
+        case 'preview':
+          targetScaleRef.current = 1.45;
+          break;
+
+        case 'external':
+        case 'link':
+          targetScaleRef.current = 1.35;
+          break;
+
+        default:
+          targetScaleRef.current = 1;
+      }
+    };
+
+    /* --------------------------------------------------
+       MOUSE LEAVE
+    -------------------------------------------------- */
+
+    const handleMouseLeave = () => {
+      hideCursor();
+    };
+
+    const handleMouseEnter = () => {
+      showCursor();
+    };
+
+    /* --------------------------------------------------
+       ANIMATION LOOP
+    -------------------------------------------------- */
 
     const animate = () => {
-      if (isVisibleRef.current) {
-        const dx = posRef.current.x - ringPosRef.current.x;
-        const dy = posRef.current.y - ringPosRef.current.y;
+      if (visibleRef.current) {
+        /* ----------------------------------------------
+           Dot
+        ---------------------------------------------- */
 
-        ringVelRef.current.x = ringVelRef.current.x * damping + dx * stiffness;
-        ringVelRef.current.y = ringVelRef.current.y * damping + dy * stiffness;
+        const dotX =
+          positionRef.current.x;
 
-        ringPosRef.current.x += ringVelRef.current.x;
-        ringPosRef.current.y += ringVelRef.current.y;
+        const dotY =
+          positionRef.current.y;
 
-        ring.style.transform = `translate3d(${ringPosRef.current.x}px, ${ringPosRef.current.y}px, 0)`;
+        dot.style.transform =
+          `translate3d(
+            ${dotX}px,
+            ${dotY}px,
+            0
+          ) translate(-50%, -50%)`;
+
+        /* ----------------------------------------------
+           Ring smoothing
+        ---------------------------------------------- */
+
+        const dx =
+          positionRef.current.x -
+          ringPositionRef.current.x;
+
+        const dy =
+          positionRef.current.y -
+          ringPositionRef.current.y;
+
+        const speed =
+          Math.abs(velocityRef.current.x) +
+          Math.abs(velocityRef.current.y);
+
+        const lerp = reducedMotion
+          ? 1
+          : Math.min(
+              0.14 + speed * 0.006,
+              0.35
+            );
+
+        ringPositionRef.current.x +=
+          dx * lerp;
+
+        ringPositionRef.current.y +=
+          dy * lerp;
+
+        ring.style.transform =
+          `translate3d(
+            ${ringPositionRef.current.x}px,
+            ${ringPositionRef.current.y}px,
+            0
+          ) translate(-50%, -50%)`;
+
+        /* ----------------------------------------------
+           Smooth scaling
+        ---------------------------------------------- */
+
+        currentScaleRef.current +=
+          (
+            targetScaleRef.current -
+            currentScaleRef.current
+          ) * 0.15;
+
+        ring.style.setProperty(
+          '--cursor-scale',
+          String(currentScaleRef.current)
+        );
+
+        /* ----------------------------------------------
+           Velocity decay
+        ---------------------------------------------- */
+
+        velocityRef.current.x *= 0.85;
+        velocityRef.current.y *= 0.85;
       }
-      rafIdRef.current = requestAnimationFrame(animate);
+
+      animationFrame =
+        requestAnimationFrame(animate);
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('mousemove', handleMouseMoveRestore, { passive: true }); // re-hide native cursor
-    document.addEventListener('mouseleave', hide);
-    document.addEventListener('mouseenter', show);
-    rafIdRef.current = requestAnimationFrame(animate);
+    /* --------------------------------------------------
+       EVENTS
+    -------------------------------------------------- */
+
+    window.addEventListener(
+      'mousemove',
+      handleMouseMove,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      'mousedown',
+      handleMouseDown,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      'mouseup',
+      handleMouseUp,
+      { passive: true }
+    );
+
+    document.addEventListener(
+      'mouseleave',
+      handleMouseLeave
+    );
+
+    document.addEventListener(
+      'mouseenter',
+      handleMouseEnter
+    );
+
+    /* --------------------------------------------------
+       INITIAL POSITION
+    -------------------------------------------------- */
+
+    ringPositionRef.current = {
+      x: -100,
+      y: -100,
+    };
+
+    /* Start */
+
+    animationFrame =
+      requestAnimationFrame(animate);
+
+    /* --------------------------------------------------
+       CLEANUP
+    -------------------------------------------------- */
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('mousemove', handleMouseMoveRestore);
-      document.removeEventListener('mouseleave', hide);
-      document.removeEventListener('mouseenter', show);
-      cancelAnimationFrame(rafIdRef.current);
-      document.documentElement.style.cursor = ''; // restore on unmount
+      cancelAnimationFrame(
+        animationFrame
+      );
+
+      window.removeEventListener(
+        'mousemove',
+        handleMouseMove
+      );
+
+      window.removeEventListener(
+        'mousedown',
+        handleMouseDown
+      );
+
+      window.removeEventListener(
+        'mouseup',
+        handleMouseUp
+      );
+
+      document.removeEventListener(
+        'mouseleave',
+        handleMouseLeave
+      );
+
+      document.removeEventListener(
+        'mouseenter',
+        handleMouseEnter
+      );
+
+      /* Reset magnetic element */
+
+      if (magneticElementRef.current) {
+        magneticElementRef.current.style.transform =
+          '';
+      }
     };
   }, []);
 
-  // SSR-safe: render nothing until we know it's a fine-pointer device.
-  // The useEffect above unmounts immediately on touch devices anyway.
+  /* --------------------------------------------------
+     TOUCH DEVICE CHECK
+  -------------------------------------------------- */
+
+  const isTouchDevice =
+    typeof window !== 'undefined' &&
+    (
+      window.matchMedia(
+        '(pointer: coarse)'
+      ).matches ||
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0
+    );
+
+  if (isTouchDevice) {
+    return null;
+  }
+
   return (
     <>
-      {/* Precision core dot — tracks mouse 1:1 */}
+      {/* =================================================
+          CUSTOM CURSOR
+      ================================================= */}
+
       <div
-        ref={dotRef}
-        className="fixed top-0 left-0 z-[9999] pointer-events-none opacity-0"
-        style={{ willChange: 'transform', contain: 'layout style paint', transition: 'opacity 0.2s ease' }}
+        ref={cursorRef}
+        className="custom-cursor"
+        aria-hidden="true"
       >
+        {/* -----------------------------------------------
+            CORE DOT
+        ----------------------------------------------- */}
+
         <div
-          className="rounded-full mix-blend-difference"
-          style={{
-            width: 12,
-            height: 12,
-            marginLeft: -6,
-            marginTop: -6,
-            background: 'radial-gradient(circle, #ffffff 0%, #2252ff 100%)',
-            transition: 'transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease',
-            willChange: 'transform',
-          }}
-        />
+          ref={dotRef}
+          className="custom-cursor-dot"
+        >
+          <span />
+        </div>
+
+        {/* -----------------------------------------------
+            OUTER RING
+        ----------------------------------------------- */}
+
+        <div
+          ref={ringRef}
+          className="custom-cursor-ring"
+        >
+          <span className="custom-cursor-ring-glow" />
+
+          <span
+            ref={iconRef}
+            className="custom-cursor-icon"
+          />
+
+          <span
+            ref={labelRef}
+            className="custom-cursor-label"
+          />
+        </div>
       </div>
 
-      {/* Springy trailing halo ring */}
-      <div
-        ref={ringRef}
-        className="fixed top-0 left-0 z-[9998] pointer-events-none opacity-0"
-        style={{ willChange: 'transform', contain: 'layout style paint', transition: 'opacity 0.2s ease' }}
-      >
-        <div
-          className="rounded-full border"
-          style={{
-            width: 40,
-            height: 40,
-            marginLeft: -20,
-            marginTop: -20,
-            borderColor: 'rgba(34, 82, 255, 0.45)',
-            transition:
-              'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease, opacity 0.15s ease',
-            willChange: 'transform',
-          }}
-        />
-      </div>
+      {/* =================================================
+          CURSOR STYLES
+      ================================================= */}
 
-      {/* Optional label that can be toggled via data-cursor-label if you extend it */}
-      <span ref={labelRef} className="sr-only" aria-hidden="true" />
+      <style>{`
+        /* -----------------------------------------------
+           MAIN CURSOR
+        ----------------------------------------------- */
+
+        .custom-cursor {
+          position: fixed;
+
+          top: 0;
+          left: 0;
+
+          width: 0;
+          height: 0;
+
+          z-index: 999999;
+
+          pointer-events: none;
+
+          opacity: 0;
+
+          transition:
+            opacity 180ms ease;
+
+          contain:
+            layout
+            style
+            paint;
+        }
+
+        /* -----------------------------------------------
+           CORE DOT
+        ----------------------------------------------- */
+
+        .custom-cursor-dot {
+          position: fixed;
+
+          top: 0;
+          left: 0;
+
+          width: 10px;
+          height: 10px;
+
+          border-radius: 999px;
+
+          transform:
+            translate3d(-100px, -100px, 0)
+            translate(-50%, -50%);
+
+          will-change: transform;
+
+          z-index: 2;
+        }
+
+        .custom-cursor-dot span {
+          display: block;
+
+          width: 100%;
+          height: 100%;
+
+          border-radius: 999px;
+
+          background:
+            radial-gradient(
+              circle,
+              #ffffff 0%,
+              #2252ff 55%,
+              rgba(34, 82, 255, 0.2) 100%
+            );
+
+          box-shadow:
+            0 0 8px
+              rgba(34, 82, 255, 0.8),
+
+            0 0 18px
+              rgba(34, 82, 255, 0.35);
+
+          transition:
+            transform 180ms
+              cubic-bezier(
+                0.16,
+                1,
+                0.3,
+                1
+              );
+        }
+
+        /* -----------------------------------------------
+           OUTER RING
+        ----------------------------------------------- */
+
+        .custom-cursor-ring {
+          position: fixed;
+
+          top: 0;
+          left: 0;
+
+          width: 42px;
+          height: 42px;
+
+          border:
+            1px solid
+            rgba(34, 82, 255, 0.45);
+
+          border-radius: 999px;
+
+          transform:
+            translate3d(-100px, -100px, 0)
+            translate(-50%, -50%)
+            scale(var(--cursor-scale, 1));
+
+          will-change:
+            transform,
+            border-color,
+            background-color;
+
+          transition:
+            width 220ms
+              cubic-bezier(
+                0.16,
+                1,
+                0.3,
+                1
+              ),
+
+            height 220ms
+              cubic-bezier(
+                0.16,
+                1,
+                0.3,
+                1
+              ),
+
+            border-color 180ms ease,
+
+            background-color 180ms ease,
+
+            box-shadow 180ms ease;
+
+          display: flex;
+
+          align-items: center;
+
+          justify-content: center;
+
+          flex-direction: column;
+
+          gap: 2px;
+
+          overflow: hidden;
+
+          z-index: 1;
+
+          backdrop-filter:
+            blur(2px);
+        }
+
+        /* -----------------------------------------------
+           GLOW
+        ----------------------------------------------- */
+
+        .custom-cursor-ring-glow {
+          position: absolute;
+
+          inset: -10px;
+
+          border-radius: inherit;
+
+          background:
+            radial-gradient(
+              circle,
+              rgba(34, 82, 255, 0.18),
+              transparent 68%
+            );
+
+          opacity: 0;
+
+          transition:
+            opacity 200ms ease;
+        }
+
+        /* -----------------------------------------------
+           ICON
+        ----------------------------------------------- */
+
+        .custom-cursor-icon {
+          position: relative;
+
+          z-index: 2;
+
+          font-size: 13px;
+
+          line-height: 1;
+
+          font-weight: 600;
+
+          color: #2252ff;
+
+          opacity: 0;
+
+          transform:
+            translateY(4px)
+            scale(0.8);
+
+          transition:
+            opacity 180ms ease,
+            transform 180ms
+              cubic-bezier(
+                0.16,
+                1,
+                0.3,
+                1
+              );
+        }
+
+        /* -----------------------------------------------
+           LABEL
+        ----------------------------------------------- */
+
+        .custom-cursor-label {
+          position: relative;
+
+          z-index: 2;
+
+          max-width: 90px;
+
+          font-size: 6px;
+
+          line-height: 1;
+
+          font-weight: 700;
+
+          letter-spacing:
+            0.08em;
+
+          white-space: nowrap;
+
+          text-align: center;
+
+          color: #2252ff;
+
+          opacity: 0;
+
+          transform:
+            translateY(4px)
+            scale(0.8);
+
+          transition:
+            opacity 180ms ease,
+            transform 180ms
+              cubic-bezier(
+                0.16,
+                1,
+                0.3,
+                1
+              );
+        }
+
+        /* =================================================
+           DEFAULT
+        ================================================= */
+
+        .custom-cursor[data-mode="default"]
+          .custom-cursor-ring {
+          border-color:
+            rgba(34, 82, 255, 0.4);
+
+          background:
+            transparent;
+
+          box-shadow:
+            0 0 12px
+              rgba(34, 82, 255, 0.08);
+        }
+
+        /* =================================================
+           INTERACTIVE STATES
+        ================================================= */
+
+        .custom-cursor[data-mode="link"]
+          .custom-cursor-ring,
+
+        .custom-cursor[data-mode="external"]
+          .custom-cursor-ring,
+
+        .custom-cursor[data-mode="project"]
+          .custom-cursor-ring,
+
+        .custom-cursor[data-mode="download"]
+          .custom-cursor-ring,
+
+        .custom-cursor[data-mode="contact"]
+          .custom-cursor-ring,
+
+        .custom-cursor[data-mode="preview"]
+          .custom-cursor-ring {
+          border-color:
+            rgba(34, 82, 255, 0.9);
+
+          background:
+            rgba(34, 82, 255, 0.07);
+
+          box-shadow:
+            0 0 20px
+              rgba(34, 82, 255, 0.18);
+        }
+
+        /* -----------------------------------------------
+           SHOW CONTENT
+        ----------------------------------------------- */
+
+        .custom-cursor[data-mode="link"]
+          .custom-cursor-icon,
+
+        .custom-cursor[data-mode="external"]
+          .custom-cursor-icon,
+
+        .custom-cursor[data-mode="project"]
+          .custom-cursor-icon,
+
+        .custom-cursor[data-mode="download"]
+          .custom-cursor-icon,
+
+        .custom-cursor[data-mode="contact"]
+          .custom-cursor-icon,
+
+        .custom-cursor[data-mode="preview"]
+          .custom-cursor-icon,
+
+        .custom-cursor[data-mode="project"]
+          .custom-cursor-label,
+
+        .custom-cursor[data-mode="download"]
+          .custom-cursor-label,
+
+        .custom-cursor[data-mode="contact"]
+          .custom-cursor-label,
+
+        .custom-cursor[data-mode="preview"]
+          .custom-cursor-label,
+
+        .custom-cursor[data-mode="link"]
+          .custom-cursor-label,
+
+        .custom-cursor[data-mode="external"]
+          .custom-cursor-label {
+          opacity: 1;
+
+          transform:
+            translateY(0)
+            scale(1);
+        }
+
+        /* -----------------------------------------------
+           GLOW ACTIVE
+        ----------------------------------------------- */
+
+        .custom-cursor[data-mode="project"]
+          .custom-cursor-ring-glow,
+
+        .custom-cursor[data-mode="contact"]
+          .custom-cursor-ring-glow,
+
+        .custom-cursor[data-mode="preview"]
+          .custom-cursor-ring-glow {
+          opacity: 1;
+        }
+
+        /* -----------------------------------------------
+           CLICK
+        ----------------------------------------------- */
+
+        .custom-cursor[data-clicked="true"]
+          .custom-cursor-dot span {
+          transform: scale(0.7);
+        }
+
+        .custom-cursor[data-clicked="true"]
+          .custom-cursor-ring {
+          background:
+            rgba(34, 82, 255, 0.16);
+        }
+
+        /* =================================================
+           MOBILE / TOUCH
+        ================================================= */
+
+        @media (pointer: coarse) {
+          .custom-cursor {
+            display: none !important;
+          }
+        }
+
+        /* =================================================
+           REDUCED MOTION
+        ================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+          .custom-cursor-ring,
+          .custom-cursor-dot span,
+          .custom-cursor-icon,
+          .custom-cursor-label {
+            transition: none !important;
+          }
+        }
+      `}</style>
     </>
   );
 }
+```
+
+## Add these attributes to your portfolio
+
+You don't need to modify every element. The cursor automatically detects normal links and buttons.
+
+For **project cards**, use:
+
+```tsx
+<div
+  className="project-card"
+  data-cursor="project"
+>
+  ...
+</div>
+```
+
+For **resume**:
+
+```tsx
+<a
+  href="/resume.pdf"
+  download
+  data-cursor="download"
+>
+  Download Resume
+</a>
+```
+
+For **contact**:
+
+```tsx
+<a
+  href="#contact"
+  data-cursor="contact"
+>
+  Contact Me
+</a>
+```
+
+For **images that open a preview**:
+
+```tsx
+<div data-cursor="preview">
+  <img src="/project.png" alt="Project" />
+</div>
+```
+
+For **external links**:
+
+```tsx
+<a
+  href="https://github.com/..."
+  target="_blank"
+  rel="noopener noreferrer"
+  data-cursor="external"
+>
+  GitHub
+</a>
+```
+
+### Optional magnetic button
+
+```tsx
+<button data-cursor="magnetic">
+  View My Work
+</button>
+```
+
+And finally, add this to your global CSS so the browser's default cursor doesn't appear alongside it:
+
+```css
+@media (pointer: fine) {
+  html,
+  body,
+  a,
+  button,
+  [role="button"],
+  input,
+  textarea,
+  select {
+    cursor: none !important;
+  }
+}
+```
+
+**One important note:** for your portfolio, I would *not* add the custom `data-cursor` attribute to every element. Let the component handle normal links/buttons automatically, and explicitly mark only **projects, resume, contact, previews, and other important interactive elements**. That keeps the UI clean and prevents the cursor from becoming distracting.
